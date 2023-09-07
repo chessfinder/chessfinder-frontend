@@ -1,9 +1,5 @@
-import React from "react";
-import { Chessboard } from "react-chessboard";
-// import { LIGHT_QUESTION_ICON, DARK_QUESTION_ICON } from '../constants';
-// TODO: Fix exported images path
-import LIGHT_QUESTION_ICON from '../assets/images/light-question-mark.svg';
-import DARK_QUESTION_ICON from '../assets/images/dark-question-mark.svg';
+import {useState, useRef, useEffect} from 'react'
+import 'chessboard-element';
 
 interface ChessBoardProps {
   position: string;
@@ -11,40 +7,56 @@ interface ChessBoardProps {
 
 const ChessBoard: React.FC<ChessBoardProps> = ({ position }) => {
 
-  const customPiece = (theme?: string) => {
-    return <img
-      src={theme === 'white' ? LIGHT_QUESTION_ICON : DARK_QUESTION_ICON}
-      alt={"light"}
-      style={{
-        width: '100%',
-        height: '100%'
-      }}
-    />
-  }
+    const [fen, setFen] = useState('empty');
+    const boardRef = useRef(null);
+
+    useEffect(() => {
+        if (boardRef.current) {
+            setFen(boardRef.current.fen())
+        }
+    }, [])
+
+
+    const clearBoard = () => {
+        if (boardRef.current) {
+            boardRef.current.clear();
+        }
+    };
+
+    const resetBoard = () => {
+        if (boardRef.current) {
+
+            boardRef.current.setPosition('start');
+        }
+    };
+
+    const handlePieceDrop = () => {
+
+        if (boardRef.current) {
+
+            setFen(boardRef.current.fen())
+
+            console.log(boardRef.current.fen(), '////');
+        }
+
+    };
+
+    const sendRequest = () => {
+        console.log(fen, 'fen')
+    }
 
   return (
     <div className="chessboard-wrapper">
-      <Chessboard
-        id="chessboard"
-        arePiecesDraggable={false}
-        position={position}
-        customPieces={{
-          wR: () => (customPiece('white')),
-          bR: () => (customPiece()),
-          wN: () => (customPiece('white')),
-          bN: () => (customPiece()),
-          wB: () => (customPiece('white')),
-          bB: () => (customPiece()),
-          wQ: () => (customPiece('white')),
-          bQ: () => (customPiece()),
-          wK: () => (customPiece('white')),
-          bK: () => (customPiece()),
-          wP: () => (customPiece('white')),
-          bP: () => (customPiece()),
-        }}
-        customLightSquareStyle= {{backgroundColor: '#d9d4d4'}}
-        customDarkSquareStyle= {{backgroundColor: '#374173'}}
-      />
+        <chess-board
+            ref={boardRef}
+            draggable-pieces
+            spare-pieces
+            drop-off-board="trash"
+            onDrop={handlePieceDrop}
+        />
+        <button onClick={clearBoard}>Clear Board</button>
+        <button onClick={resetBoard}>Start Position</button>
+        <button onClick={sendRequest}>Send Request</button>
     </div>
   );
 }
