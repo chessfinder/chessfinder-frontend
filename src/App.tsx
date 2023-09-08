@@ -1,14 +1,54 @@
-import { useState } from 'react';
-import './assets/styles/app.scss'
+import {useEffect, useRef, useState} from 'react';
+import 'chessboard-element';
 import {Container, Box, Button} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Header from './layout/Header';
-import ChessBoard from "./components/ChessBoard";
 import RightColHeader from "./components/RightColHeader";
-import { EMPTY_BOARD_POSITION, INITIAL_BOARD_POSITION } from './constants';
+import SearchBox from "./components/SearchBox";
+import './assets/styles/app.scss'
+import { styled } from "@mui/material/styles";
 
 function App() {
-  const [currentPosition, setCurrentPosition] = useState(INITIAL_BOARD_POSITION);
+    const [fen, setFen] = useState('empty');
+    const boardRef = useRef(null);
+
+    useEffect(() => {
+        if (boardRef.current) {
+            setFen(boardRef.current.fen())
+        }
+    }, [])
+
+    const clearBoard = () => {
+        if (boardRef.current) {
+            boardRef.current.clear();
+        }
+    };
+
+    const resetBoard = () => {
+        if (boardRef.current) {
+
+            boardRef.current.setPosition('start');
+        }
+    };
+
+    const handlePieceDrop = () => {
+
+        if (boardRef.current) {
+
+            setFen(boardRef.current.fen())
+
+            console.log(boardRef.current.fen(), '////');
+        }
+
+    };
+
+    const sendRequest = () => {
+        console.log(fen, 'fen')
+    }
+
+    const RightColBody = styled('div')(({theme}) => ({
+        margin: theme.spacing(2)
+    }))
 
   return (
     <>
@@ -17,7 +57,13 @@ function App() {
       <Container maxWidth="xl">
         <Grid container spacing={2} md={10} margin="auto">
           <Grid item xs={6} md={6}>
-            <ChessBoard position={currentPosition} />
+              <chess-board
+                  ref={boardRef}
+                  draggable-pieces
+                  spare-pieces
+                  drop-off-board="trash"
+                  onDrop={handlePieceDrop}
+              />
           </Grid>
 
           <Grid item xs={6} md={6}>
@@ -27,15 +73,16 @@ function App() {
                 height: '100%',
                 backgroundColor: '#efefef',
               }}>
-              <RightColHeader />
+                <RightColHeader />
 
-              <Button
-                variant="contained"
-                color={'secondary'}
-                sx={{ml: 1}}
-                onClick={() => setCurrentPosition(EMPTY_BOARD_POSITION)}>
-                Reset board
-              </Button>
+                <RightColBody>
+                    <Button variant="contained" color={'secondary'} onClick={clearBoard}>Clear Board</Button>
+                    <Button variant="contained" color={'secondary'} onClick={resetBoard}>Start Position</Button>
+                    <Button variant="contained" color={'secondary'} onClick={sendRequest}>Send Request</Button>
+
+                    <SearchBox />
+                </RightColBody>
+
             </Box>
           </Grid>
         </Grid>
