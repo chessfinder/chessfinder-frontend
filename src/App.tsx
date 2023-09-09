@@ -1,87 +1,90 @@
-import {useEffect, useRef, useState} from 'react';
+import { useRef } from 'react';
 import 'chessboard-element';
-import {Container, Box, Button} from '@mui/material';
-import Grid from '@mui/material/Grid';
+import {Container, Grid, Box, Button} from '@mui/material';
+import {styled} from "@mui/material/styles";
 import Header from './layout/Header';
 import RightColHeader from "./components/RightColHeader";
 import SearchBox from "./components/SearchBox";
 import './assets/styles/app.scss'
-import { styled } from "@mui/material/styles";
 
 function App() {
-    const [fen, setFen] = useState('empty');
-    const boardRef = useRef(null);
+  const boardRef = useRef(null);
 
-    useEffect(() => {
-        if (boardRef.current) {
-            setFen(boardRef.current.fen())
-        }
-    }, [])
+  const clearBoard = () => {
+    if (boardRef.current) {
+      boardRef.current.clear();
+    }
+  };
 
-    const clearBoard = () => {
-        if (boardRef.current) {
-            boardRef.current.clear();
-        }
-    };
+  const resetBoard = () => {
+    if (boardRef.current) {
+      boardRef.current.setPosition('start');
+    }
+  };
 
-    const resetBoard = () => {
-        if (boardRef.current) {
-
-            boardRef.current.setPosition('start');
-        }
-    };
-
-    const handlePieceDrop = () => {
-
-        if (boardRef.current) {
-
-            setFen(boardRef.current.fen())
-
-            console.log(boardRef.current.fen(), '////');
-        }
-
-    };
-
-    const sendRequest = () => {
-        console.log(fen, 'fen')
+  const handlePieceDrop = () => {
+    if (boardRef.current) {
+      console.log(boardRef.current.fen(), '////');
     }
 
-    const RightColBody = styled('div')(({theme}) => ({
-        margin: theme.spacing(2)
-    }))
+  };
+
+  const findGame = () => {
+    if (boardRef.current) {
+      console.log(boardRef.current.fen(), 'fen');
+    }
+
+  }
+
+  const RightColBody = styled('div')(({theme}) => ({
+    margin: theme.spacing(2)
+  }))
 
   return (
     <>
       <Header/>
 
       <Container maxWidth="xl">
-        <Grid container spacing={2} md={10} margin="auto">
-          <Grid item xs={6} md={6}>
-              <chess-board
-                  ref={boardRef}
-                  draggable-pieces
-                  spare-pieces
-                  drop-off-board="trash"
-                  onDrop={handlePieceDrop}
-              />
+        <Grid item container spacing={2} md={10} margin="auto">
+          <Grid item xs={5} sx={{ml: 4}}>
+            <chess-board
+              spare-pieces
+              style={{width: "450px"}}
+              ref={boardRef}
+              drop-off-board="trash"
+              onDrop={handlePieceDrop}
+            />
           </Grid>
 
-          <Grid item xs={6} md={6}>
+          <Grid item xs={6}>
             <Box
               sx={{
                 width: '100%',
                 height: '100%',
                 backgroundColor: '#efefef',
               }}>
-                <RightColHeader />
+              <RightColHeader/>
 
-                <RightColBody>
-                    <Button variant="contained" color={'secondary'} onClick={clearBoard}>Clear Board</Button>
-                    <Button variant="contained" color={'secondary'} onClick={resetBoard}>Start Position</Button>
-                    <Button variant="contained" color={'secondary'} onClick={sendRequest}>Send Request</Button>
+              <RightColBody>
+                <Button
+                  variant="contained"
+                  color={'secondary'}
+                  sx={{minWidth: "170px"}}
+                  onClick={clearBoard}
+                >
+                  Clear Board
+                </Button>
 
-                    <SearchBox />
-                </RightColBody>
+                <Button
+                  variant="contained"
+                  color={'secondary'}
+                  sx={{minWidth: '170px', ml: 2}}
+                  onClick={resetBoard}>
+                  Start Position
+                </Button>
+
+                <SearchBox findGame={findGame}/>
+              </RightColBody>
 
             </Box>
           </Grid>

@@ -11,7 +11,7 @@ function RightColHeader() {
         display: 'flex',
         alignItems: 'center',
         padding: 2,
-        marginBottom: 2,
+        marginBottom: 3,
         backgroundColor: 'primary.main',
       }}
     >
