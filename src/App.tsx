@@ -34,6 +34,16 @@ function App() {
       console.log(boardRef.current.fen(), 'fen');
     }
 
+    // try {
+    //   request(`/search?q=${query}`).then((res) => {
+    //     setGames(res.games);
+    //     setTaskid(res.taskId);
+    //     console.log('Searching for:', query);
+    //   });
+    // } catch (error) {
+    //   console.error('Error searching:', error);
+    // }
+
   }
 
   const RightColBody = styled('div')(({theme}) => ({

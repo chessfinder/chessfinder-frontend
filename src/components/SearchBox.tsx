@@ -1,8 +1,7 @@
 import Toolbar from "@mui/material/Toolbar";
 import SearchIcon from "@mui/icons-material/Search";
-import {Button, Box} from '@mui/material';
-import InputBase from "@mui/material/InputBase";
-import {alpha, styled} from "@mui/material/styles";
+import { Button, InputBase } from '@mui/material';
+import { alpha, styled } from "@mui/material/styles";
 
 const Search = styled('div')(({theme}) => ({
   width: '100%',
