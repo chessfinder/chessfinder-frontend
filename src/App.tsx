@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import 'chessboard-element';
 import {Container, Grid, Box, Button} from '@mui/material';
 import {styled} from "@mui/material/styles";
+import { useHttp } from "./hooks/useHttp";
 import Header from './layout/Header';
 import RightColHeader from "./components/RightColHeader";
 import SearchBox from "./components/SearchBox";
@@ -9,6 +10,7 @@ import './assets/styles/app.scss'
 
 function App() {
   const boardRef = useRef(null);
+  const { request } = useHttp();
 
   const clearBoard = () => {
     if (boardRef.current) {
@@ -34,15 +36,13 @@ function App() {
       console.log(boardRef.current.fen(), 'fen');
     }
 
-    // try {
-    //   request(`/search?q=${query}`).then((res) => {
-    //     setGames(res.games);
-    //     setTaskid(res.taskId);
-    //     console.log('Searching for:', query);
-    //   });
-    // } catch (error) {
-    //   console.error('Error searching:', error);
-    // }
+    try {
+      request(`/game`).then((res) => {
+        console.log('res:', res);
+      });
+    } catch (error) {
+      console.error('Error searching:', error);
+    }
 
   }
 
