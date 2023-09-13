@@ -33,7 +33,7 @@ class SparePieces extends Component {
           const spares =
             this.getOrientation(context.orientation) === 'black'
               ? ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP']
-              : ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP'];
+              : ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP', 'unknownPiece'];
 
           return (
             <div style={spareStyles(context.width)}>
