@@ -19,10 +19,9 @@ import ErrorBoundary from './ErrorBoundary';
 
 const ChessboardContext = React.createContext();
 
-const getPositionObject = position => {
+export const getPositionObject = position => {
   if (position === 'start')
-    return fenToObj('????R?r?/?????kq?/????Q???/????????/????????/????????/????????/????????');
-    // return fenToObj('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+    return fenToObj('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
   if (validFen(position)) return fenToObj(position);
   if (validPositionObject(position)) return position;
 
@@ -173,7 +172,7 @@ class Chessboard extends Component {
      */
     allowDrag: PropTypes.func,
     /**
-    When set to true it undos previous move
+     When set to true it undos previous move
      */
     undo: PropTypes.bool
   };
@@ -262,16 +261,16 @@ class Chessboard extends Component {
       if (waitForTransition) {
         return new Promise(resolve => {
           this.setState({ currentPosition: positionFromProps }, () =>
-            setTimeout(() => {
-              this.setState({ waitForTransition: false });
-              resolve();
-            }, transitionDuration)
+              setTimeout(() => {
+                this.setState({ waitForTransition: false });
+                resolve();
+              }, transitionDuration)
           );
         }).then(() =>
-          setTimeout(
-            () => this.setState({ phantomPiece: null }),
-            transitionDuration
-          )
+            setTimeout(
+                () => this.setState({ phantomPiece: null }),
+                transitionDuration
+            )
         );
       }
     }
@@ -333,8 +332,8 @@ class Chessboard extends Component {
           currentPosition: positionFromProps,
           waitForTransition: squareClicked ? false : true,
           phantomPiece: squareClicked
-            ? null
-            : { [targetSquare]: currentPosition[targetSquare] },
+              ? null
+              : { [targetSquare]: currentPosition[targetSquare] },
           manualDrop: false,
           squareClicked: false
         };
@@ -404,8 +403,8 @@ class Chessboard extends Component {
     const { calcWidth, width } = this.props;
     const { screenWidth, screenHeight } = this.state;
     return calcWidth({ screenWidth, screenHeight })
-      ? calcWidth({ screenWidth, screenHeight })
-      : width;
+        ? calcWidth({ screenWidth, screenHeight })
+        : width;
   };
 
   render() {
@@ -427,45 +426,45 @@ class Chessboard extends Component {
     const getScreenDimensions = screenWidth && screenHeight;
 
     return (
-      <ErrorBoundary>
-        <ChessboardContext.Provider
-          value={{
-            ...this.props,
-            pieces,
-            orientation: orientation.toLowerCase(),
-            dropOffBoard: dropOffBoard.toLowerCase(),
-            ...{
-              width: this.getWidth(),
-              sourceSquare,
-              targetSquare,
-              sourcePiece,
-              waitForTransition,
-              phantomPiece,
-              setPosition: this.setPosition,
-              manualDrop,
-              setTouchState: this.setTouchState,
-              currentPosition,
-              screenWidth,
-              screenHeight,
-              wasManuallyDropped: this.wasManuallyDropped,
-              wasSquareClicked: this.wasSquareClicked
-            }
-          }}
-        >
-          <div>
-            {getScreenDimensions && sparePieces && <SparePieces.Top />}
-            {getScreenDimensions && <Board />}
-            {getScreenDimensions && sparePieces && <SparePieces.Bottom />}
-          </div>
-          <CustomDragLayer
-            width={this.getWidth()}
-            pieces={pieces}
-            id={id}
-            wasPieceTouched={wasPieceTouched}
-            sourceSquare={targetSquare}
-          />
-        </ChessboardContext.Provider>
-      </ErrorBoundary>
+        <ErrorBoundary>
+          <ChessboardContext.Provider
+              value={{
+                ...this.props,
+                pieces,
+                orientation: orientation.toLowerCase(),
+                dropOffBoard: dropOffBoard.toLowerCase(),
+                ...{
+                  width: this.getWidth(),
+                  sourceSquare,
+                  targetSquare,
+                  sourcePiece,
+                  waitForTransition,
+                  phantomPiece,
+                  setPosition: this.setPosition,
+                  manualDrop,
+                  setTouchState: this.setTouchState,
+                  currentPosition,
+                  screenWidth,
+                  screenHeight,
+                  wasManuallyDropped: this.wasManuallyDropped,
+                  wasSquareClicked: this.wasSquareClicked
+                }
+              }}
+          >
+            <div>
+              {getScreenDimensions && sparePieces && <SparePieces.Top />}
+              {getScreenDimensions && <Board />}
+              {getScreenDimensions && sparePieces && <SparePieces.Bottom />}
+            </div>
+            <CustomDragLayer
+                width={this.getWidth()}
+                pieces={pieces}
+                id={id}
+                wasPieceTouched={wasPieceTouched}
+                sourceSquare={targetSquare}
+            />
+          </ChessboardContext.Provider>
+        </ErrorBoundary>
     );
   }
 }

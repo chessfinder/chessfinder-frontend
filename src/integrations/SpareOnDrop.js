@@ -1,16 +1,59 @@
-import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
+import React, {Component, useState} from 'react'; // eslint-disable-line no-unused-vars
 import Chessboard from '../Chessboard';
+import Chess from '../Chessboard/chess';
 
-function SpareOnDrop() {
-  const onDrop = ({ sourceSquare, targetSquare, piece }) => {
-    console.log('drop', piece, sourceSquare, targetSquare);
+class SpareOnDrop extends Component {
+
+  state = {
+    fen: 'start',
   };
 
-  return (
-    <div className="App">
-      <Chessboard sparePieces position="start" onDrop={onDrop} />
-    </div>
-  );
+  componentDidMount() {
+    this.game = new Chess();
+  }
+
+  onDrop = ({ targetSquare, sourceSquare, piece }) => {
+
+    console.log('sourceSquare', sourceSquare)
+
+    if(this.state.fen === 'start') {
+      this.setState(() => ({
+        fen: {
+          [targetSquare]: piece
+        }
+      }));
+    } else {
+      this.setState(() => ({
+        fen: {
+          ...this.state.fen,
+          [targetSquare]: piece
+        }
+      }));
+    }
+  };
+
+  onDragOverSquare = square => {
+    console.log(square)
+  }
+
+  render() {
+    const { fen } = this.state;
+
+    return (
+        <div className="App">
+          {console.log(fen, 'fen')}
+          <Chessboard
+              sparePieces
+              position={fen}
+              dropOffBoard="trash"
+              onDrop={this.onDrop}
+              onDragOverSquare={this.onDragOverSquare}
+          />
+        </div>
+    );
+  }
+
+
 }
 
 export default SpareOnDrop;

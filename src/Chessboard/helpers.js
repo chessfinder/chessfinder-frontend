@@ -7,17 +7,17 @@ export const constructPositionAttributes = (currentPosition, position) => {
   const difference = diff(currentPosition, position);
   const squaresAffected = difference.length;
   const sourceSquare =
-    difference && difference[1] && difference && difference[1].kind === 'D'
-      ? difference[1].path && difference[1].path[0]
-      : difference[0].path && difference[0].path[0];
+      difference && difference[1] && difference && difference[1].kind === 'D'
+          ? difference[1].path && difference[1].path[0]
+          : difference[0].path && difference[0].path[0];
   const targetSquare =
-    difference && difference[1] && difference && difference[1].kind === 'D'
-      ? difference[0] && difference[0].path[0]
-      : difference[1] && difference[1].path[0];
+      difference && difference[1] && difference && difference[1].kind === 'D'
+          ? difference[0] && difference[0].path[0]
+          : difference[1] && difference[1].path[0];
   const sourcePiece =
-    difference && difference[1] && difference && difference[1].kind === 'D'
-      ? difference[1] && difference[1].lhs
-      : difference[1] && difference[1].rhs;
+      difference && difference[1] && difference && difference[1].kind === 'D'
+          ? difference[1] && difference[1].lhs
+          : difference[1] && difference[1].rhs;
   return { sourceSquare, targetSquare, sourcePiece, squaresAffected };
 };
 
@@ -61,13 +61,13 @@ export function fenToObj(fen) {
 
 function expandFenEmptySquares(fen) {
   return fen
-    .replace(/8/g, '11111111')
-    .replace(/7/g, '1111111')
-    .replace(/6/g, '111111')
-    .replace(/5/g, '11111')
-    .replace(/4/g, '1111')
-    .replace(/3/g, '111')
-    .replace(/2/g, '11');
+      .replace(/8/g, '11111111')
+      .replace(/7/g, '1111111')
+      .replace(/6/g, '111111')
+      .replace(/5/g, '11111')
+      .replace(/4/g, '1111')
+      .replace(/3/g, '111')
+      .replace(/2/g, '11');
 }
 
 export function validFen(fen) {
@@ -86,7 +86,7 @@ export function validFen(fen) {
 
   // check each section
   for (let i = 0; i < 8; i++) {
-    if (chunks[i].length !== 8 || chunks[i].search(/[^kqrnbpKQRNBP10?-]/) !== -1) {
+    if (chunks[i].length !== 8 || chunks[i].search(/[^kqrnbpKQRNBP1]/) !== -1) {
       return false;
     }
   }
@@ -97,57 +97,12 @@ export function validFen(fen) {
 // convert FEN piece code to bP, wK, etc
 function fenToPieceCode(piece) {
   // black piece
-  // if (piece.toLowerCase() === piece) {
-  //   return 'b' + piece.toUpperCase();
-  // }
+  if (piece.toLowerCase() === piece) {
+    return 'b' + piece.toUpperCase();
+  }
 
-  // // white piece
-  // return 'w' + piece.toUpperCase();
-  if (piece === 'p') {
-    return 'bP';
-  }
-  if (piece === 'P') {
-    return 'wP';
-  }
-  if (piece === 'n') {
-    return 'bN';
-  }
-  if (piece === 'N') {
-    return 'wN';
-  }
-  if (piece === 'b') {
-    return 'bB';
-  }
-  if (piece === 'B') {
-    return 'wB';
-  }
-  if (piece === 'r') {
-    return 'bR';
-  }
-  if (piece === 'R') {
-    return 'wR';
-  }
-  if (piece === 'q') {
-    return 'bQ';
-  }
-  if (piece === 'Q') {
-    return 'wQ';
-  }
-  if (piece === 'k') {
-    return 'bK';
-  }
-  if (piece === 'K') {
-    return 'wK';
-  }
-  if (piece === '-') {
-    return '-';
-  }
-  if (piece === '0') {
-    return '0';
-  }
-  if (piece === '?') {
-    return 'unknownPiece';
-  }
+  // white piece
+  return 'w' + piece.toUpperCase();
 }
 
 function validSquare(square) {
@@ -173,13 +128,13 @@ export function validPositionObject(pos) {
 
 function squeezeFenEmptySquares(fen) {
   return fen
-    .replace(/11111111/g, '8')
-    .replace(/1111111/g, '7')
-    .replace(/111111/g, '6')
-    .replace(/11111/g, '5')
-    .replace(/1111/g, '4')
-    .replace(/111/g, '3')
-    .replace(/11/g, '2');
+      .replace(/11111111/g, '8')
+      .replace(/1111111/g, '7')
+      .replace(/111111/g, '6')
+      .replace(/11111/g, '5')
+      .replace(/1111/g, '4')
+      .replace(/111/g, '3')
+      .replace(/11/g, '2');
 }
 
 // convert bP, wK, etc code to FEN structure
