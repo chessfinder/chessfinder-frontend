@@ -106,10 +106,6 @@
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
-    },
-    "ghooks": {
-      "pre-commit": "npm run validate",
-      "commit-msg": "npm run commitmsg"
     }
   }
 }
