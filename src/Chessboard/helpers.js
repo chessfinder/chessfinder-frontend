@@ -86,6 +86,7 @@ export function validFen(fen) {
 
   // check each section
   for (let i = 0; i < 8; i++) {
+    // if (chunks[i].length !== 8 || chunks[i].search(/[^kqrnbpKQRNBP1]/) !== -1) {
     if (chunks[i].length !== 8 || chunks[i].search(/[^kqrnbpKQRNBP10?-]/) !== -1) {
       return false;
     }
@@ -97,57 +98,16 @@ export function validFen(fen) {
 // convert FEN piece code to bP, wK, etc
 function fenToPieceCode(piece) {
   // black piece
-  // if (piece.toLowerCase() === piece) {
-  //   return 'b' + piece.toUpperCase();
-  // }
+  if (piece.toLowerCase() === piece) {
+    return 'b' + piece.toUpperCase();
+  }
 
-  // // white piece
-  // return 'w' + piece.toUpperCase();
-  if (piece === 'p') {
-    return 'bP';
-  }
-  if (piece === 'P') {
-    return 'wP';
-  }
-  if (piece === 'n') {
-    return 'bN';
-  }
-  if (piece === 'N') {
-    return 'wN';
-  }
-  if (piece === 'b') {
-    return 'bB';
-  }
-  if (piece === 'B') {
-    return 'wB';
-  }
-  if (piece === 'r') {
-    return 'bR';
-  }
-  if (piece === 'R') {
-    return 'wR';
-  }
-  if (piece === 'q') {
-    return 'bQ';
-  }
-  if (piece === 'Q') {
-    return 'wQ';
-  }
-  if (piece === 'k') {
-    return 'bK';
-  }
-  if (piece === 'K') {
-    return 'wK';
-  }
-  if (piece === '-') {
-    return '-';
-  }
-  if (piece === '0') {
-    return '0';
-  }
   if (piece === '?') {
     return 'unknownPiece';
   }
+
+  // white piece
+  return 'w' + piece.toUpperCase();
 }
 
 function validSquare(square) {
