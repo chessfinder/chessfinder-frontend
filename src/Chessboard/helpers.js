@@ -86,6 +86,7 @@ export function validFen(fen) {
 
   // check each section
   for (let i = 0; i < 8; i++) {
+    // if (chunks[i].length !== 8 || chunks[i].search(/[^kqrnbpKQRNBP1]/) !== -1) {
     if (chunks[i].length !== 8 || chunks[i].search(/[^kqrnbpKQRNBP10?-]/) !== -1) {
       return false;
     }
@@ -96,13 +97,6 @@ export function validFen(fen) {
 
 // convert FEN piece code to bP, wK, etc
 function fenToPieceCode(piece) {
-  // black piece
-  // if (piece.toLowerCase() === piece) {
-  //   return 'b' + piece.toUpperCase();
-  // }
-
-  // // white piece
-  // return 'w' + piece.toUpperCase();
   if (piece === 'p') {
     return 'bP';
   }
@@ -145,9 +139,11 @@ function fenToPieceCode(piece) {
   if (piece === '0') {
     return '0';
   }
+
   if (piece === '?') {
     return 'unknownPiece';
   }
+
 }
 
 function validSquare(square) {

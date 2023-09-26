@@ -28,42 +28,42 @@ class SparePieces extends Component {
 
   render() {
     return (
-      <Chessboard.Consumer>
-        {context => {
-          const spares =
-            this.getOrientation(context.orientation) === 'black'
-              ? ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP']
-              : ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP', 'unknownPiece'];
+        <Chessboard.Consumer>
+          {context => {
+            const spares =
+                this.getOrientation(context.orientation) === 'black'
+                    ? ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP']
+                    : ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP'];
 
-          return (
-            <div style={spareStyles(context.width)}>
-              {spares.map(p => (
-                <div data-testid={`spare-${p}`} key={p}>
-                  <Piece
-                    piece={p}
-                    width={context.width}
-                    setPosition={context.setPosition}
-                    square={'spare'}
-                    dropOffBoard={context.dropOffBoard}
-                    draggable={true}
-                    onDrop={context.onDrop}
-                    sourceSquare={context.sourceSquare}
-                    targetSquare={context.targetSquare}
-                    sourcePiece={context.sourcePiece}
-                    orientation={context.orientation}
-                    manualDrop={context.manualDrop}
-                    id={context.id}
-                    pieces={context.pieces}
-                    wasManuallyDropped={context.wasManuallyDropped}
-                    onPieceClick={context.onPieceClick}
-                    allowDrag={context.allowDrag}
-                  />
+            return (
+                <div style={spareStyles(context.width)}>
+                  {spares.map(p => (
+                      <div data-testid={`spare-${p}`} key={p}>
+                        <Piece
+                            piece={p}
+                            width={context.width}
+                            setPosition={context.setPosition}
+                            square={'spare'}
+                            dropOffBoard={context.dropOffBoard}
+                            draggable={true}
+                            onDrop={context.onDrop}
+                            sourceSquare={context.sourceSquare}
+                            targetSquare={context.targetSquare}
+                            sourcePiece={context.sourcePiece}
+                            orientation={context.orientation}
+                            manualDrop={context.manualDrop}
+                            id={context.id}
+                            pieces={context.pieces}
+                            wasManuallyDropped={context.wasManuallyDropped}
+                            onPieceClick={context.onPieceClick}
+                            allowDrag={context.allowDrag}
+                        />
+                      </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          );
-        }}
-      </Chessboard.Consumer>
+            );
+          }}
+        </Chessboard.Consumer>
     );
   }
 }
