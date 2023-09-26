@@ -173,7 +173,7 @@ class Chessboard extends Component {
      */
     allowDrag: PropTypes.func,
     /**
-     When set to true it undos previous move
+    When set to true it undos previous move
      */
     undo: PropTypes.bool
   };
