@@ -151,6 +151,7 @@ function validSquare(square) {
 }
 
 function validPieceCode(code) {
+  console.log(code, 'code')
   return isString(code) && code.search(/^[bw][KQRNBP]$/) !== -1;
 }
 
@@ -185,6 +186,9 @@ function pieceCodeToFen(piece) {
   // white piece
   if (pieceCodeLetters[0] === 'w') {
     return pieceCodeLetters[1].toUpperCase();
+  }
+  if (piece === '?') {
+    return '?';
   }
 
   // black piece
