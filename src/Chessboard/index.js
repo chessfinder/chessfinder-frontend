@@ -20,7 +20,6 @@ import ErrorBoundary from './ErrorBoundary';
 const ChessboardContext = React.createContext();
 
 const getPositionObject = position => {
-  debugger
   if (position === 'start')
     return fenToObj('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
   // return fenToObj('????R?r?/?????kq?/????Q???/????????/????????/????????/????????/????????');
@@ -245,6 +244,8 @@ class Chessboard extends Component {
 
   componentDidUpdate(prevProps) {
     const { position, transitionDuration, getPosition } = this.props;
+
+    console.log(position, 'pos....')
     const { waitForTransition, undoMove } = this.state;
     const positionFromProps = getPositionObject(position);
     const previousPositionFromProps = getPositionObject(prevProps.position);
