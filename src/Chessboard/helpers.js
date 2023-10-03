@@ -136,6 +136,7 @@ function fenToPieceCode(piece) {
   if (piece === '-') {
     return '-';
   }
+
   if (piece === '0') {
     return '0';
   }
@@ -151,7 +152,7 @@ function validSquare(square) {
 }
 
 function validPieceCode(code) {
-  return isString(code) && code.search(/^[bw][KQRNBP]|\?$/) !== -1;
+  return isString(code) && code.search(/^[bw][KQRNBP]|0|\?$/) !== -1;
 }
 
 export function validPositionObject(pos) {

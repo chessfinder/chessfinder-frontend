@@ -19,8 +19,6 @@ class SpareOnDrop extends Component {
     } else {
       if (sourceSquare === targetSquare) return;
 
-      console.log(this.state.fen, "<<<<<")
-
       const newFen = this.state.fen
       delete newFen[sourceSquare];
       newFen[targetSquare] = piece;
@@ -29,9 +27,6 @@ class SpareOnDrop extends Component {
         return {
           fen: newFen,
         }});
-
-      console.log(this.state.fen, ">>>>>")
-
     }
 
   };
