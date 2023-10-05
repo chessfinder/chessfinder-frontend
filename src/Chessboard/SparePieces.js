@@ -12,16 +12,24 @@ function SparePiecesBottom() {
   return <SparePieces />;
 }
 
+function SparePiecesLeft() {
+  return <SparePieces left />;
+}
+
 class SparePieces extends Component {
-  static propTypes = { top: PropTypes.bool };
+  static propTypes = { top: PropTypes.bool, left: PropTypes.bool };
 
   static Top = SparePiecesTop;
   static Bottom = SparePiecesBottom;
+  static Left = SparePiecesLeft;
 
   getOrientation = orientation => {
-    const { top } = this.props;
+    const { top, left } = this.props;
+
     if (top) {
       return orientation === 'black' ? 'white' : 'black';
+    } else if(left) {
+      return orientation === 'common';
     }
     return orientation === 'black' ? 'black' : 'white';
   };
@@ -32,9 +40,13 @@ class SparePieces extends Component {
           {context => {
             const spares =
                 this.getOrientation(context.orientation) === 'black'
-                    ? ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP', '?', '0']
-                    : ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP', '?', '0'];
+                    ? ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP']
+                    : this.getOrientation(context.orientation) === 'white'
+                    ? ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP']
+                    : ['?', '0'];
 
+            {
+              console.log(this.getOrientation(context.orientation) === 'common', '././/')}
             return (
                 <div style={spareStyles(context.width)}>
                   {spares.map(p => (

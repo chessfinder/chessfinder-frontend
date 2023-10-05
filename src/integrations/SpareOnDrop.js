@@ -34,6 +34,8 @@ class SpareOnDrop extends Component {
   render() {
     const { fen } = this.state;
 
+    console.log(fen, 'fen')
+
     return (
       <div className="App">
         <Chessboard
