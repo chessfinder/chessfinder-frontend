@@ -26,7 +26,7 @@ class SparePieces extends Component {
   getOrientation = orientation => {
     const { top, left } = this.props;
 
-    if (top) {
+    if(top) {
       return orientation === 'black' ? 'white' : 'black';
     } else if(left) {
       return orientation === 'common';
@@ -44,11 +44,8 @@ class SparePieces extends Component {
                     : this.getOrientation(context.orientation) === 'white'
                     ? ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP']
                     : ['?', '0'];
-
-            {
-              console.log(this.getOrientation(context.orientation) === 'common', '././/')}
             return (
-                <div style={spareStyles(context.width)}>
+              <div style={this.props.left ? {} : spareStyles(context.width)}>
                   {spares.map(p => (
                       <div data-testid={`spare-${p}`} key={p}>
                         <Piece

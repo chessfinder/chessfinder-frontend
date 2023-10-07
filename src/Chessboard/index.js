@@ -452,7 +452,7 @@ class Chessboard extends Component {
             }
           }}
         >
-          <div>
+          <div style={{position: 'relative'}}>
             {getScreenDimensions && sparePieces && <SparePieces.Top />}
             {getScreenDimensions && <Board />}
             {getScreenDimensions && sparePieces && <SparePieces.Bottom />}
