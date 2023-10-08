@@ -1,4 +1,5 @@
 import diff from 'deep-diff';
+import {squareStates} from "./Constants";
 
 export const ItemTypes = { PIECE: 'piece' };
 export const COLUMNS = 'abcdefgh'.split('');
@@ -86,7 +87,6 @@ export function validFen(fen) {
 
   // check each section
   for (let i = 0; i < 8; i++) {
-    // if (chunks[i].length !== 8 || chunks[i].search(/[^kqrnbpKQRNBP1]/) !== -1) {
     if (chunks[i].length !== 8 || chunks[i].search(/[^kqrnbpKQRNBP10?-]/) !== -1) {
       return false;
     }
@@ -133,23 +133,21 @@ function fenToPieceCode(piece) {
   if (piece === 'K') {
     return 'wK';
   }
-
-  if (piece === '0') {
-    return '0';
+  if (piece === squareStates.UNKNOWN) {
+    return squareStates.UNKNOWN;
   }
-
-  if (piece === '?') {
-    return '?';
+  if (piece === squareStates.OCCUPIED) {
+    return squareStates.OCCUPIED;
   }
-
 }
 
 function validSquare(square) {
   return isString(square) && square.search(/^[a-h][1-8]$/) !== -1;
 }
 
+// TODO: change ?, 0, - to constants
 function validPieceCode(code) {
-  return isString(code) && code.search(/^[bw][KQRNBP]|0|\?$/) !== -1;
+  return isString(code) && code.search(/^[bw][KQRNBP]|0|-|\?$/) !== -1;
 }
 
 export function validPositionObject(pos) {
@@ -185,12 +183,16 @@ function pieceCodeToFen(piece) {
     return pieceCodeLetters[1].toUpperCase();
   }
 
-  if (piece === '?') {
-    return '?';
+  if (piece === squareStates.UNKNOWN) {
+    return squareStates.UNKNOWN;
   }
 
-  if (piece === '0') {
-    return '0';
+  if (piece === squareStates.EMPTY) {
+    return squareStates.EMPTY;
+  }
+
+  if (piece === squareStates.OCCUPIED) {
+    return squareStates.OCCUPIED;
   }
 
   // black piece

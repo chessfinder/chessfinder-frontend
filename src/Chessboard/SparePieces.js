@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import Piece from './Piece';
 import Chessboard from './index';
+import {squareStates} from "./Constants";
 
 function SparePiecesTop() {
   return <SparePieces top />;
@@ -43,7 +44,7 @@ class SparePieces extends Component {
                     ? ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP']
                     : this.getOrientation(context.orientation) === 'white'
                     ? ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP']
-                    : ['?', '0'];
+                    : [squareStates.UNKNOWN, squareStates.OCCUPIED];
             return (
               <div style={this.props.left ? {} : spareStyles(context.width)}>
                   {spares.map(p => (

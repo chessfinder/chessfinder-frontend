@@ -1,6 +1,7 @@
 import React, {Component} from 'react'; // eslint-disable-line no-unused-vars
 import Chessboard, {getPositionObject} from '../Chessboard';
 import {objToFen} from "../Chessboard/helpers";
+import {squareStates} from "../Chessboard/Constants";
 import deleteSvg from "../img/delete.svg";
 
 class SpareOnDrop extends Component {
@@ -12,8 +13,7 @@ class SpareOnDrop extends Component {
   };
 
   onDrop = ({ sourceSquare, targetSquare, piece }) => {
-    console.log('from = ' + sourceSquare, 'to = ' + targetSquare)
-
+    // TODO: check this.state.fen === 'empty' statement for later, maybe you won't need it
     if(this.state.fen === 'empty') {
       this.setState(() => ({
         fen: {
@@ -32,7 +32,6 @@ class SpareOnDrop extends Component {
           fen: newFen,
         }});
     }
-
   };
 
   handleMouseOverSquare = (square) => {
@@ -48,41 +47,45 @@ class SpareOnDrop extends Component {
   };
 
   onSquareClick = (square) => {
-    console.log(square, 'square')
+    if(this.state.toggleDelete) {
+      const newFen = { ...this.state.fen };
+      newFen[square] = squareStates.EMPTY;
 
-    const newFen = { ...this.state.fen };
-    delete newFen[square];
-
-    this.setState({fen: newFen});
+      this.setState(() => {
+        return {
+          fen: newFen,
+        }});
+    }
   }
 
   deleteHandler = () => {
-
     this.onSquareClick();
 
     this.setState((prevState) => ({
       toggleDelete: !prevState.toggleDelete,
     }));
-
   }
 
   sendRequestHandler = () => {
-    console.log(objToFen(this.state.fen));
+    console.log(objToFen(this.state.fen), 'final fen');
+
+    this.setState((prevState) => ({
+      toggleDelete: !prevState.toggleDelete,
+    }));
   }
 
   render() {
     const { fen, selectedSquare } = this.state;
-
-    console.log(this.state.fen, '././././')
 
     return (
       <div style={chessboardWrapper}>
         <div style={col}>
           <button style={{ ...deleteButtonStyle, ...(this.state.toggleDelete ? toggledStyle : {}) }}
                   onClick={this.deleteHandler}>
-            <img src={deleteSvg} alt="deleeete"/>
+            <img src={deleteSvg} alt="delete"/>
           </button>
         </div>
+
         <Chessboard
           sparePieces
           position={fen}
@@ -97,6 +100,7 @@ class SpareOnDrop extends Component {
             },
           }}
         />
+
         <div style={col}>
           <input type="text" placeholder="Username" style={inputStyles} />
           <button onClick={this.sendRequestHandler} style={buttonStyles}>Send Request</button>
