@@ -189,8 +189,8 @@ function pieceCodeToFen(piece) {
     return '?';
   }
 
-  if (piece === 'occupied') {
-    return 'occupied';
+  if (piece === '0') {
+    return '0';
   }
 
   // black piece
