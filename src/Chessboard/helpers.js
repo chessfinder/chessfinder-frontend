@@ -133,15 +133,13 @@ function fenToPieceCode(piece) {
   if (piece === 'K') {
     return 'wK';
   }
-  if (piece === '-') {
-    return '-';
-  }
+
   if (piece === '0') {
     return '0';
   }
 
   if (piece === '?') {
-    return 'unknownPiece';
+    return '?';
   }
 
 }
@@ -151,7 +149,7 @@ function validSquare(square) {
 }
 
 function validPieceCode(code) {
-  return isString(code) && code.search(/^[bw][KQRNBP]$/) !== -1;
+  return isString(code) && code.search(/^[bw][KQRNBP]|0|\?$/) !== -1;
 }
 
 export function validPositionObject(pos) {
@@ -185,6 +183,14 @@ function pieceCodeToFen(piece) {
   // white piece
   if (pieceCodeLetters[0] === 'w') {
     return pieceCodeLetters[1].toUpperCase();
+  }
+
+  if (piece === '?') {
+    return '?';
+  }
+
+  if (piece === '0') {
+    return '0';
   }
 
   // black piece

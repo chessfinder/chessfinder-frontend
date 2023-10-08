@@ -8,7 +8,6 @@ class SpareOnDrop extends Component {
   };
 
   onDrop = ({ sourceSquare, targetSquare, piece }) => {
-
     console.log('from = ' + sourceSquare, 'to = ' + targetSquare)
 
     if(this.state.fen === 'empty') {
@@ -34,6 +33,8 @@ class SpareOnDrop extends Component {
 
   render() {
     const { fen } = this.state;
+
+    console.log(fen, 'fen')
 
     return (
       <div className="App">

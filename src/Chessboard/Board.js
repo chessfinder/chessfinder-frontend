@@ -67,29 +67,32 @@ class Board extends Component {
                     wasSquareClicked={context.wasSquareClicked}
                   >
                     {this.hasPiece(context.currentPosition, square) ? (
-                      <Piece
-                        pieces={context.pieces}
-                        square={square}
-                        piece={context.currentPosition[square]}
-                        width={context.width}
-                        setPosition={context.setPosition}
-                        dropOffBoard={context.dropOffBoard}
-                        getSquareCoordinates={this.getSquareCoordinates}
-                        draggable={context.draggable}
-                        onDrop={context.onDrop}
-                        sourceSquare={context.sourceSquare}
-                        targetSquare={context.targetSquare}
-                        waitForTransition={context.waitForTransition}
-                        transitionDuration={context.transitionDuration}
-                        orientation={context.orientation}
-                        id={context.id}
-                        setTouchState={context.setTouchState}
-                        wasManuallyDropped={context.wasManuallyDropped}
-                        phantomPiece={context.phantomPiece}
-                        onPieceClick={context.onPieceClick}
-                        wasSquareClicked={context.wasSquareClicked}
-                        allowDrag={context.allowDrag}
-                      />
+                      <>
+                        <Piece
+                          pieces={context.pieces}
+                          square={square}
+                          piece={context.currentPosition[square]}
+                          width={context.width}
+                          setPosition={context.setPosition}
+                          dropOffBoard={context.dropOffBoard}
+                          getSquareCoordinates={this.getSquareCoordinates}
+                          draggable={context.draggable}
+                          onDrop={context.onDrop}
+                          sourceSquare={context.sourceSquare}
+                          targetSquare={context.targetSquare}
+                          waitForTransition={context.waitForTransition}
+                          transitionDuration={context.transitionDuration}
+                          orientation={context.orientation}
+                          id={context.id}
+                          setTouchState={context.setTouchState}
+                          wasManuallyDropped={context.wasManuallyDropped}
+                          phantomPiece={context.phantomPiece}
+                          onPieceClick={context.onPieceClick}
+                          wasSquareClicked={context.wasSquareClicked}
+                          allowDrag={context.allowDrag}
+                        />
+                      </>
+
                     ) : null}
 
                     {this.showPhantom({

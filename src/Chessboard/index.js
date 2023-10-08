@@ -21,8 +21,7 @@ const ChessboardContext = React.createContext();
 
 const getPositionObject = position => {
   if (position === 'start')
-    // return fenToObj('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
-  return fenToObj('????R?r?/?????kq?/????Q???/????????/????????/????????/????????/????????');
+    return fenToObj('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
   if (validFen(position)) return fenToObj(position);
   if (validPositionObject(position)) return position;
 
@@ -182,7 +181,7 @@ class Chessboard extends Component {
     id: '0',
     position: '',
     pieces: {},
-    width: 560,
+    width: 500,
     orientation: 'white',
     showNotation: true,
     sparePieces: false,
@@ -244,6 +243,7 @@ class Chessboard extends Component {
 
   componentDidUpdate(prevProps) {
     const { position, transitionDuration, getPosition } = this.props;
+
     const { waitForTransition, undoMove } = this.state;
     const positionFromProps = getPositionObject(position);
     const previousPositionFromProps = getPositionObject(prevProps.position);
@@ -452,10 +452,11 @@ class Chessboard extends Component {
             }
           }}
         >
-          <div>
+          <div style={{position: 'relative'}}>
             {getScreenDimensions && sparePieces && <SparePieces.Top />}
             {getScreenDimensions && <Board />}
             {getScreenDimensions && sparePieces && <SparePieces.Bottom />}
+            {getScreenDimensions && sparePieces && <div style={commonPiecesStyles}><SparePieces.Left /></div>}
           </div>
           <CustomDragLayer
             width={this.getWidth()}
@@ -471,3 +472,14 @@ class Chessboard extends Component {
 }
 
 export default DragDropContext(MultiBackend(HTML5toTouch))(Chessboard);
+
+const commonPiecesStyles = {
+  position: 'absolute',
+  left: '-70px',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  'div': {
+    width: 'unset',
+    flexDirection: 'column'
+  }
+};
