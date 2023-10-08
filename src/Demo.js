@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import SpareOnDrop from './integrations/SpareOnDrop';
 
 class Demo extends Component {
@@ -12,11 +12,12 @@ class Demo extends Component {
     showUndoMove: false,
     showSpareOnDrop: false
   };
+
   render() {
     return (
-        <div style={boardsContainer}>
-         <SpareOnDrop />
-        </div>
+      <div className="app" style={boardsContainer}>
+        <SpareOnDrop/>
+      </div>
     );
   }
 }

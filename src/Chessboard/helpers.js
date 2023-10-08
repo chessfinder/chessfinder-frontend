@@ -214,7 +214,7 @@ export function objToFen(obj) {
         fen = fen + pieceCodeToFen(obj[square]);
       } else {
         // empty space
-        fen = fen + '1';
+        fen = fen + '-';
       }
     }
 
