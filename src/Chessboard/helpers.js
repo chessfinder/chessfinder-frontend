@@ -133,9 +133,6 @@ function fenToPieceCode(piece) {
   if (piece === 'K') {
     return 'wK';
   }
-  if (piece === '-') {
-    return '-';
-  }
 
   if (piece === '0') {
     return '0';
@@ -187,8 +184,13 @@ function pieceCodeToFen(piece) {
   if (pieceCodeLetters[0] === 'w') {
     return pieceCodeLetters[1].toUpperCase();
   }
+
   if (piece === '?') {
     return '?';
+  }
+
+  if (piece === 'occupied') {
+    return 'occupied';
   }
 
   // black piece
