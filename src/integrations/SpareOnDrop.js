@@ -5,7 +5,6 @@ import {squareStates} from "../Chessboard/Constants";
 import deleteSvg from "../img/delete.svg";
 
 class SpareOnDrop extends Component {
-
   state = {
     fen: getPositionObject('start'),
     toggleDelete: false,
@@ -64,6 +63,11 @@ class SpareOnDrop extends Component {
     this.setState((prevState) => ({
       toggleDelete: !prevState.toggleDelete,
     }));
+
+    this.setState(() => {
+      return {
+        fen: this.state.fen,
+      }});
   }
 
   sendRequestHandler = () => {
