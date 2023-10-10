@@ -8,7 +8,7 @@
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate",
     "commit": "git-cz",
-    "test": "jest --coverage",
+    "test": "jest",
     "build": "webpack --config webpack.prod.js",
     "lint": "eslint src",
     "validate": "npm-run-all --parallel test lint build",

@@ -6,8 +6,8 @@ import Chessboard from '../index';
 
 test('renders pieces when position is "start"', () => {
   const { getByTestId } = render(<Chessboard position="start" />);
-  const whiteQueen = getByTestId('wQ-d1');
-  const blackKnight = getByTestId('bN-b8');
+  const whiteQueen = getByTestId('?-d1');
+  const blackKnight = getByTestId('?-b8');
 
   expect(whiteQueen).toBeInTheDOM();
   expect(blackKnight).toBeInTheDOM();
@@ -23,7 +23,7 @@ test('renders no pieces when position is not provided', () => {
   expect(blackKnight).not.toBeInTheDOM();
 });
 
-test('renders a sparePiece sparePieces is true', () => {
+test('renders a sparePiece when sparePieces is true', () => {
   const { queryByTestId } = render(
     <Chessboard position="start" sparePieces={true} />
   );
@@ -43,7 +43,9 @@ test('renders correct pieces when given a position object', () => {
       position={{
         d6: 'bK',
         d4: 'wP',
-        e4: 'wK'
+        e4: 'wK',
+        e5: '?',
+        h1: '0'
       }}
     />
   );
@@ -51,9 +53,14 @@ test('renders correct pieces when given a position object', () => {
   const blackRook = queryByTestId('bR-e1');
   const blackKing = queryByTestId('bK-d6');
   const blackBishop = queryByTestId('bB-f3');
+  const unknown = queryByTestId('?-e5');
+  const occupied = queryByTestId('0-h1');
+
 
   expect(whiteQueen).toBeInTheDOM();
   expect(blackRook).not.toBeInTheDOM();
   expect(blackKing).toBeInTheDOM();
   expect(blackBishop).not.toBeInTheDOM();
+  expect(unknown).toBeInTheDOM();
+  expect(occupied).toBeInTheDOM();
 });
