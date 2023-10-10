@@ -19,9 +19,9 @@ import ErrorBoundary from './ErrorBoundary';
 
 const ChessboardContext = React.createContext();
 
-const getPositionObject = position => {
+export const getPositionObject = position => {
   if (position === 'start')
-    return fenToObj('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+    return fenToObj('????????/????????/????????/????????/????????/????????/????????/????????');
   if (validFen(position)) return fenToObj(position);
   if (validPositionObject(position)) return position;
 
@@ -477,9 +477,5 @@ const commonPiecesStyles = {
   position: 'absolute',
   left: '-70px',
   top: '50%',
-  transform: 'translateY(-50%)',
-  'div': {
-    width: 'unset',
-    flexDirection: 'column'
-  }
+  transform: 'translateY(-50%)'
 };

@@ -1,4 +1,5 @@
 import diff from 'deep-diff';
+import {squareStates} from "./Constants";
 
 export const ItemTypes = { PIECE: 'piece' };
 export const COLUMNS = 'abcdefgh'.split('');
@@ -86,7 +87,6 @@ export function validFen(fen) {
 
   // check each section
   for (let i = 0; i < 8; i++) {
-    // if (chunks[i].length !== 8 || chunks[i].search(/[^kqrnbpKQRNBP1]/) !== -1) {
     if (chunks[i].length !== 8 || chunks[i].search(/[^kqrnbpKQRNBP10?-]/) !== -1) {
       return false;
     }
@@ -133,23 +133,21 @@ function fenToPieceCode(piece) {
   if (piece === 'K') {
     return 'wK';
   }
-
-  if (piece === '0') {
-    return '0';
+  if (piece === squareStates.UNKNOWN) {
+    return squareStates.UNKNOWN;
   }
-
-  if (piece === '?') {
-    return '?';
+  if (piece === squareStates.OCCUPIED) {
+    return squareStates.OCCUPIED;
   }
-
 }
 
 function validSquare(square) {
   return isString(square) && square.search(/^[a-h][1-8]$/) !== -1;
 }
 
+// TODO: change ?, 0, - to constants
 function validPieceCode(code) {
-  return isString(code) && code.search(/^[bw][KQRNBP]|0|\?$/) !== -1;
+  return isString(code) && code.search(/^[bw][KQRNBP]|0|-|\?$/) !== -1;
 }
 
 export function validPositionObject(pos) {
@@ -165,40 +163,31 @@ export function validPositionObject(pos) {
   return true;
 }
 
-function squeezeFenEmptySquares(fen) {
-  return fen
-    .replace(/11111111/g, '8')
-    .replace(/1111111/g, '7')
-    .replace(/111111/g, '6')
-    .replace(/11111/g, '5')
-    .replace(/1111/g, '4')
-    .replace(/111/g, '3')
-    .replace(/11/g, '2');
-}
-
 // convert bP, wK, etc code to FEN structure
 function pieceCodeToFen(piece) {
+  if (piece === squareStates.UNKNOWN) {
+    return squareStates.UNKNOWN;
+  }
+
+  if (piece === squareStates.EMPTY) {
+    return squareStates.EMPTY;
+  }
+
+  if (piece === squareStates.OCCUPIED) {
+    return squareStates.OCCUPIED;
+  }
+
   let pieceCodeLetters = piece.split('');
 
-  // white piece
   if (pieceCodeLetters[0] === 'w') {
     return pieceCodeLetters[1].toUpperCase();
   }
 
-  if (piece === '?') {
-    return '?';
+  if (pieceCodeLetters[0] === 'b') {
+    return pieceCodeLetters[1].toLowerCase();
   }
-
-  if (piece === '0') {
-    return '0';
-  }
-
-  // black piece
-  return pieceCodeLetters[1].toLowerCase();
 }
 
-// position object to FEN string
-// returns false if the obj is not a valid position object
 export function objToFen(obj) {
   if (!validPositionObject(obj)) return false;
 
@@ -209,12 +198,10 @@ export function objToFen(obj) {
     for (let j = 0; j < 8; j++) {
       let square = COLUMNS[j] + currentRow;
 
-      // piece exists
       if (obj.hasOwnProperty(square)) {
         fen = fen + pieceCodeToFen(obj[square]);
       } else {
-        // empty space
-        fen = fen + '1';
+        fen = fen + squareStates.EMPTY;
       }
     }
 
@@ -224,9 +211,6 @@ export function objToFen(obj) {
 
     currentRow = currentRow - 1;
   }
-
-  // squeeze the empty numbers together
-  fen = squeezeFenEmptySquares(fen);
 
   return fen;
 }

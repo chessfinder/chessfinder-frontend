@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import SpareOnDrop from './integrations/SpareOnDrop';
+import React, {Component} from 'react';
+import SearchBoard from './integrations/SearchBoard';
 
 class Demo extends Component {
   state = {
@@ -12,11 +12,12 @@ class Demo extends Component {
     showUndoMove: false,
     showSpareOnDrop: false
   };
+
   render() {
     return (
-        <div style={boardsContainer}>
-         <SpareOnDrop />
-        </div>
+      <div className="app" style={boardsContainer}>
+        <SearchBoard/>
+      </div>
     );
   }
 }

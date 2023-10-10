@@ -1,4 +1,5 @@
 import React from 'react';
+import {squareStates} from "../../Constants";
 //Chess pieces originally by User:Cburnett in a sprite image for use in computer applications.
 
 export default {
@@ -722,7 +723,7 @@ export default {
             </g>
         </svg>
     ),
-    "?": (
+    [squareStates.UNKNOWN]: (
       <svg
         fill="#4a4949"
         version="1.1"
@@ -746,7 +747,7 @@ export default {
         </g>
         </svg>
     ),
-  "0": (
+  [squareStates.OCCUPIED]: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       version="1.1"
