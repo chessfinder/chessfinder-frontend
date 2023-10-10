@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import SpareOnDrop from './integrations/SpareOnDrop';
+import SearchBoard from './integrations/SearchBoard';
 
 class Demo extends Component {
   state = {
@@ -16,7 +16,7 @@ class Demo extends Component {
   render() {
     return (
       <div className="app" style={boardsContainer}>
-        <SpareOnDrop/>
+        <SearchBoard/>
       </div>
     );
   }

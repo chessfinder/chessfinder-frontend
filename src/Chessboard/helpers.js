@@ -163,17 +163,6 @@ export function validPositionObject(pos) {
   return true;
 }
 
-function squeezeFenEmptySquares(fen) {
-  return fen
-    .replace(/11111111/g, '8')
-    .replace(/1111111/g, '7')
-    .replace(/111111/g, '6')
-    .replace(/11111/g, '5')
-    .replace(/1111/g, '4')
-    .replace(/111/g, '3')
-    .replace(/11/g, '2');
-}
-
 // convert bP, wK, etc code to FEN structure
 function pieceCodeToFen(piece) {
   if (piece === squareStates.UNKNOWN) {
@@ -199,8 +188,6 @@ function pieceCodeToFen(piece) {
   }
 }
 
-// position object to FEN string
-// returns false if the obj is not a valid position object
 export function objToFen(obj) {
   if (!validPositionObject(obj)) return false;
 
@@ -211,11 +198,9 @@ export function objToFen(obj) {
     for (let j = 0; j < 8; j++) {
       let square = COLUMNS[j] + currentRow;
 
-      // piece exists
       if (obj.hasOwnProperty(square)) {
         fen = fen + pieceCodeToFen(obj[square]);
       } else {
-        // empty space
         fen = fen + squareStates.EMPTY;
       }
     }
@@ -226,9 +211,6 @@ export function objToFen(obj) {
 
     currentRow = currentRow - 1;
   }
-
-  // squeeze the empty numbers together
-  fen = squeezeFenEmptySquares(fen);
 
   return fen;
 }

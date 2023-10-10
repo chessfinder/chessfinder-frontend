@@ -4,7 +4,7 @@ import {objToFen} from "../Chessboard/helpers";
 import {squareStates} from "../Chessboard/Constants";
 import deleteSvg from "../img/delete.svg";
 
-class SpareOnDrop extends Component {
+class SearchBoard extends Component {
   state = {
     fen: getPositionObject('start'),
     toggleDelete: false,
@@ -114,7 +114,7 @@ class SpareOnDrop extends Component {
   }
 }
 
-export default SpareOnDrop;
+export default SearchBoard;
 
 const chessboardWrapper = {
   display: 'flex',
