@@ -176,13 +176,6 @@ function squeezeFenEmptySquares(fen) {
 
 // convert bP, wK, etc code to FEN structure
 function pieceCodeToFen(piece) {
-  let pieceCodeLetters = piece.split('');
-
-  // white piece
-  if (pieceCodeLetters[0] === 'w') {
-    return pieceCodeLetters[1].toUpperCase();
-  }
-
   if (piece === squareStates.UNKNOWN) {
     return squareStates.UNKNOWN;
   }
@@ -195,8 +188,15 @@ function pieceCodeToFen(piece) {
     return squareStates.OCCUPIED;
   }
 
-  // black piece
-  return pieceCodeLetters[1].toLowerCase();
+  let pieceCodeLetters = piece.split('');
+
+  if (pieceCodeLetters[0] === 'w') {
+    return pieceCodeLetters[1].toUpperCase();
+  }
+
+  if (pieceCodeLetters[0] === 'b') {
+    return pieceCodeLetters[1].toLowerCase();
+  }
 }
 
 // position object to FEN string
@@ -216,7 +216,7 @@ export function objToFen(obj) {
         fen = fen + pieceCodeToFen(obj[square]);
       } else {
         // empty space
-        fen = fen + '-';
+        fen = fen + squareStates.EMPTY;
       }
     }
 
