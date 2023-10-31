@@ -32,9 +32,7 @@ class Popup extends Component {
         <div style={popupOverlay}>
           <div style={popupStyles}>
             <div style={popupHeaderStyles}>
-              <button style={popupCloseBtnStyles}
-                      onClick={() => this.setState({ showPopup: false })}
-              >
+              <button style={popupCloseBtnStyles} onClick={this.props.togglePopup}>
                 x
               </button>
 

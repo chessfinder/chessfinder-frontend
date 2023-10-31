@@ -93,7 +93,7 @@ class SearchBoard extends Component {
     }
 
     axios.get('https://bi0plb9pba.execute-api.us-east-1.amazonaws.com/api/faster/board', {
-      params: data
+      data
     })
       .then(response => {
         console.log(response.data, 'response');
@@ -107,6 +107,10 @@ class SearchBoard extends Component {
       showPopup: true
     }));
 
+  }
+
+  togglePopup = () => {
+    this.setState({ showPopup: !this.state.showPopup });
   }
 
   render() {
@@ -148,7 +152,7 @@ class SearchBoard extends Component {
           </button>
         </div>
 
-        <Popup showPopup={this.state.showPopup} />
+        <Popup showPopup={this.state.showPopup} togglePopup={this.togglePopup} />
       </div>
     );
   }
