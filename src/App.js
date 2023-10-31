@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import SearchBoard from './integrations/SearchBoard';
+import SearchBoard from './components/SearchBoard';
 
-class Demo extends Component {
+class App extends Component {
   state = {
     showCustomizedBoard: false,
     showWithMoveValidation: false,
@@ -22,7 +22,7 @@ class Demo extends Component {
   }
 }
 
-export default Demo;
+export default App;
 
 const boardsContainer = {
   display: 'flex',

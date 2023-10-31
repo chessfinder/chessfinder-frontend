@@ -16,12 +16,12 @@ import {
 import CustomDragLayer from './CustomDragLayer';
 import defaultPieces from './svg/chesspieces/standard';
 import ErrorBoundary from './ErrorBoundary';
+import {DEFAULT_FEN} from "./Constants";
 
 const ChessboardContext = React.createContext();
 
 export const getPositionObject = position => {
-  if (position === 'start')
-    return fenToObj('????????/????????/????????/????????/????????/????????/????????/????????');
+  if (position === 'start') return DEFAULT_FEN;
   if (validFen(position)) return fenToObj(position);
   if (validPositionObject(position)) return position;
 
@@ -75,7 +75,7 @@ class Chessboard extends Component {
     dropOffBoard: PropTypes.oneOf(['snapback', 'trash']),
     /**
      * The time it takes for a piece to slide to the target square.  Only used
-     * when the next position comes from the position prop. See chessboardjsx.com/integrations/random for an example
+     * when the next position comes from the position prop. See chessboardjsx.com/components/random for an example
      */
     transitionDuration: PropTypes.number,
     /**
@@ -92,7 +92,7 @@ class Chessboard extends Component {
     darkSquareStyle: PropTypes.object,
     /**
      * An object containing custom styles for squares.  For example {'e4': {backgroundColor: 'orange'},
-     * 'd4': {backgroundColor: 'blue'}}.  See chessboardjsx.com/integrations/move-validation for an example
+     * 'd4': {backgroundColor: 'blue'}}.  See chessboardjsx.com/components/move-validation for an example
      */
     squareStyles: PropTypes.object,
     /**
@@ -115,20 +115,20 @@ class Chessboard extends Component {
     roughSquare: PropTypes.func,
     /**
      *  A function to call when the mouse is over a square.
-     *  See chessboardjsx.com/integrations/move-validation for an example.
+     *  See chessboardjsx.com/components/move-validation for an example.
      *
      *  Signature: function(square: string) => void
      */
     onMouseOverSquare: PropTypes.func,
     /**
      * A function to call when the mouse has left the square.
-     * See chessboardjsx.com/integrations/move-validation for an example.
+     * See chessboardjsx.com/components/move-validation for an example.
      *
      * Signature: function(square: string) => void
      */
     onMouseOutSquare: PropTypes.func,
     /**
-     * The logic to be performed on piece drop. See chessboardjsx.com/integrations for examples.
+     * The logic to be performed on piece drop. See chessboardjsx.com/components for examples.
      *
      * Signature: function({ sourceSquare: string, targetSquare: string, piece: string }) => void
      */
@@ -331,7 +331,7 @@ class Chessboard extends Component {
           sourcePiece,
           // Set the current position to the new position minus the targetSquare
           currentPosition: positionFromProps,
-          waitForTransition: squareClicked ? false : true,
+          waitForTransition: !squareClicked,
           phantomPiece: squareClicked
             ? null
             : { [targetSquare]: currentPosition[targetSquare] },
@@ -359,7 +359,7 @@ class Chessboard extends Component {
         targetSquare,
         sourcePiece,
         currentPosition: positionFromProps,
-        waitForTransition: squareClicked ? false : true,
+        waitForTransition: !squareClicked,
         manualDrop: false,
         squareClicked: false
       };

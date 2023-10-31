@@ -1,59 +1,65 @@
 import React, {Component} from 'react'; // eslint-disable-line no-unused-vars
-import Chessboard, {getPositionObject} from '../Chessboard';
+import Chessboard from '../Chessboard';
 import {objToFen} from "../Chessboard/helpers";
-import {squareStates} from "../Chessboard/Constants";
+import {DEFAULT_FEN, PIECE_FROM_SPARE, squareStates} from "../Chessboard/Constants";
 import deleteSvg from "../img/delete.svg";
+import Popup from "./Popup";
+import axios from 'axios';
+
 
 class SearchBoard extends Component {
   state = {
-    fen: getPositionObject('start'),
+    fen: DEFAULT_FEN,
     toggleDelete: false,
     selectedSquare: null,
+    showPopup: false,
+    message: 'Hello from ParentComponent',
+    inputData: '',
+    responseData: null,
   };
 
-  onDrop = ({ sourceSquare, targetSquare, piece }) => {
-    // TODO: check this.state.fen === 'empty' statement for later, maybe you won't need it
-    if(this.state.fen === 'empty') {
-      this.setState(() => ({
-        fen: {
-          [targetSquare]: piece
-        }
-      }));
-    } else {
-      if (sourceSquare === targetSquare) return;
+  onDrop = ({sourceSquare, targetSquare, piece}) => {
+    this.setState({toggleDelete: false});
 
-      const newFen = this.state.fen
-      delete newFen[sourceSquare];
-      newFen[targetSquare] = piece;
+    if (sourceSquare === targetSquare) return;
 
-      this.setState(() => {
-        return {
-          fen: newFen,
-        }});
+    const newFen = {...this.state.fen};
+
+    if(sourceSquare !== PIECE_FROM_SPARE) {
+      newFen[sourceSquare] = squareStates.UNKNOWN;
     }
+
+    newFen[targetSquare] = piece;
+
+    this.setState(() => {
+      return {
+        fen: newFen,
+      }
+    });
   };
 
   handleMouseOverSquare = (square) => {
-    if(this.state.toggleDelete) {
-      this.setState({ selectedSquare: square });
+    if (this.state.toggleDelete) {
+      this.setState({selectedSquare: square});
     }
   };
 
   handleMouseOutSquare = () => {
-    if(this.state.toggleDelete) {
-      this.setState({ selectedSquare: null });
+    if (this.state.toggleDelete) {
+      this.setState({selectedSquare: null});
     }
   };
 
   onSquareClick = (square) => {
-    if(this.state.toggleDelete) {
-      const newFen = { ...this.state.fen };
+    if (this.state.toggleDelete) {
+      const newFen = {...this.state.fen};
       newFen[square] = squareStates.EMPTY;
 
       this.setState(() => {
         return {
           fen: newFen,
-        }});
+        }
+      });
     }
   }
 
@@ -67,24 +73,49 @@ class SearchBoard extends Component {
     this.setState(() => {
       return {
         fen: this.state.fen,
-      }});
+      }
+    });
+  }
+
+  handleChange = (e) => {
+
+    this.setState({ inputData: e.target.value });
+
   }
 
   sendRequestHandler = () => {
-    console.log(objToFen(this.state.fen), 'final fen');
+
+    const newFen = objToFen(this.state.fen);
+
+    const data = {
+      newFen,
+      inputData: this.state.inputData
+    }
+
+    axios.get('https://bi0plb9pba.execute-api.us-east-1.amazonaws.com/api/faster/board', {
+      params: data
+    })
+      .then(response => {
+        console.log(response.data, 'response');
+      })
+      .catch(error => {
+        console.error(error);
+      });
 
     this.setState((prevState) => ({
       toggleDelete: !prevState.toggleDelete,
+      showPopup: true
     }));
+
   }
 
   render() {
-    const { fen, selectedSquare } = this.state;
+    const {fen, selectedSquare} = this.state;
 
     return (
       <div style={chessboardWrapper}>
         <div style={col}>
-          <button style={{ ...deleteButtonStyle, ...(this.state.toggleDelete ? toggledStyle : {}) }}
+          <button style={{...deleteButtonStyle, ...(this.state.toggleDelete ? toggledStyle : {})}}
                   onClick={this.deleteHandler}>
             <img src={deleteSvg} alt="delete"/>
           </button>
@@ -106,9 +137,18 @@ class SearchBoard extends Component {
         />
 
         <div style={col}>
-          <input type="text" placeholder="Username" style={inputStyles} />
-          <button onClick={this.sendRequestHandler} style={buttonStyles}>Send Request</button>
+          <input type="text"
+                 placeholder="Username"
+                 style={inputStyles}
+                 value={this.state.inputData}
+                 onChange={this.handleChange}
+          />
+          <button onClick={this.sendRequestHandler} style={buttonStyles}>
+            Send Request
+          </button>
         </div>
+
+        <Popup showPopup={this.state.showPopup} />
       </div>
     );
   }

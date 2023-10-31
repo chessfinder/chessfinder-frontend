@@ -10,7 +10,7 @@ series [How to Contribute to an Open Source Project on GitHub][egghead]
 1.  Fork and clone the repo
 2.  Create a branch for your PR
 3.  Run `npm run start` to start the development server
-4.  Use `./src/integrations/Demo.js` to test your changes
+4.  Use `./src/integrations/App.js` to test your changes
 5.  Follow the guidelines below for pushing changes
 
 > Tip: Keep your `master` branch pointing at the original repository and make
