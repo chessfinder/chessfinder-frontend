@@ -9,7 +9,7 @@
     "contributors:generate": "all-contributors generate",
     "commit": "git-cz",
     "test": "jest",
-    "build": "webpack --config webpack.prod.js",
+    "build": "webpack --config webpack.dev.js",
     "lint": "eslint src",
     "validate": "npm-run-all --parallel test lint build",
     "travis-deploy-once": "travis-deploy-once",

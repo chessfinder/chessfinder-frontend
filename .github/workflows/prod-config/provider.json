@@ -1,0 +1,6 @@
+{
+  "awscloudformation": {
+      "configLevel": "project",
+      "useProfile": false
+    }
+}
