@@ -27,7 +27,7 @@ jobs:
       run: |
         npm install
         aws configure list-profiles
-
+    
     - name: Install Amplify CLI
       run: npm install -g @aws-amplify/cli
 
