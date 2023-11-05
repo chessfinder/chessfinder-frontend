@@ -18,7 +18,18 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Deploy to Amplify
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
+
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Install Amplify CLI
+      run: npm install -g @aws-amplify/cli
+
+    - name: Deploy to AWS
       run: |
         amplify init --amplify "$(cat .github/workflows/demo-config/app.json)" --frontend "$(cat .github/workflows/demo-config/frontend.json)" --providers "$(cat .github/workflows/demo-config/provider.json)" --yes
         amplify publish
