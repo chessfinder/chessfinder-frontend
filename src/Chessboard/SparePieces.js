@@ -18,7 +18,24 @@ function SparePiecesLeft() {
 }
 
 class SparePieces extends Component {
-  static propTypes = { top: PropTypes.bool, left: PropTypes.bool };
+  static propTypes = {
+    top: PropTypes.bool,
+    left: PropTypes.bool
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedPiece: null
+    }
+  }
+
+  handlePieceClick = (piece) => {
+    this.setState({
+      selectedPiece: piece
+    });
+  };
+
 
   static Top = SparePiecesTop;
   static Bottom = SparePiecesBottom;
@@ -36,6 +53,8 @@ class SparePieces extends Component {
   };
 
   render() {
+    const { selectedPiece } = this.state;
+
     return (
         <Chessboard.Consumer>
           {context => {
@@ -46,9 +65,16 @@ class SparePieces extends Component {
                     ? ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP']
                     : [squareStates.UNKNOWN, squareStates.OCCUPIED];
             return (
-              <div style={this.props.left ? {} : spareStyles(context.width)}>
+              <div className='spare-pieces' style={this.props.left ? {} : spareStyles(context.width)}>
                   {spares.map(p => (
-                      <div data-testid={`spare-${p}`} key={p}>
+                      <div data-testid={`spare-${p}`}
+                           key={p}
+                           onClick={() => this.handlePieceClick(p)}
+                           className={selectedPiece === p ? 'clicked-piece' : ''}
+                           style={{
+                            boxShadow: (selectedPiece === p) ? 'inset 0 0 1px 4px yellow' : ''
+                          }}
+                      >
                         <Piece
                             piece={p}
                             width={context.width}
@@ -81,7 +107,8 @@ class SparePieces extends Component {
 export default SparePieces;
 
 const spareStyles = width => ({
+  width,
   display: 'flex',
   justifyContent: 'center',
-  width
+  marginBlock: '10px'
 });

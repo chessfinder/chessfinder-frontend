@@ -11,5 +11,8 @@ module.exports = {
   },
   parser: 'babel-eslint', // class properties
   plugins: ['prettier', 'react'],
-  rules: { 'no-console': 'off' }
+  rules: {
+    'no-console': 'off',
+    "react/prop-types": 0
+  }
 };
