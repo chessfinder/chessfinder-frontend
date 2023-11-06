@@ -29,6 +29,5 @@ const boardsContainer = {
   justifyContent: 'space-around',
   alignItems: 'center',
   flexWrap: 'wrap',
-  width: '100vw',
-  marginBlock: 30,
+  width: '100vw'
 };
