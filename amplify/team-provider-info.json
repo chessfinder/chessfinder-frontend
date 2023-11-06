@@ -1,0 +1,44 @@
+{
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-chessfinder-prod-220733-authRole",
+      "UnauthRoleArn": "arn:aws:iam::363515748671:role/amplify-chessfinder-prod-220733-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::363515748671:role/amplify-chessfinder-prod-220733-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-chessfinder-prod-220733-deployment",
+      "UnauthRoleName": "amplify-chessfinder-prod-220733-unauthRole",
+      "StackName": "amplify-chessfinder-prod-220733",
+      "StackId": "arn:aws:cloudformation:us-east-1:363515748671:stack/amplify-chessfinder-prod-220733/336b6bb0-7c06-11ee-912a-0e68b550c1ff",
+      "AmplifyAppId": "d1jia4ngo1gjff"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d1jia4ngo1gjff",
+          "type": "manual"
+        }
+      }
+    }
+  },
+  "demo": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-chessfinder-demo-221457-authRole",
+      "UnauthRoleArn": "arn:aws:iam::363515748671:role/amplify-chessfinder-demo-221457-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::363515748671:role/amplify-chessfinder-demo-221457-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-chessfinder-demo-221457-deployment",
+      "UnauthRoleName": "amplify-chessfinder-demo-221457-unauthRole",
+      "StackName": "amplify-chessfinder-demo-221457",
+      "StackId": "arn:aws:cloudformation:us-east-1:363515748671:stack/amplify-chessfinder-demo-221457/3bc49ba0-7c07-11ee-95d7-0e4ae2ea68d1",
+      "AmplifyAppId": "d1jia4ngo1gjff"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d1jia4ngo1gjff",
+          "type": "manual"
+        }
+      }
+    }
+  }
+}
