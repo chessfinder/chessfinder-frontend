@@ -6,16 +6,17 @@ import deleteSvg from "../img/delete.svg";
 import Popup from "./Popup";
 import axios from 'axios';
 
-
 class SearchBoard extends Component {
   state = {
     fen: DEFAULT_FEN,
     toggleDelete: false,
+    toggleSparePiece: false,
     selectedSquare: null,
+    selectedSparePiece: null,
     showPopup: false,
     message: 'Hello from ParentComponent',
     inputData: '',
-    responseData: null,
+    responseData: null
   };
 
   onDrop = ({sourceSquare, targetSquare, piece}) => {
@@ -39,19 +40,25 @@ class SearchBoard extends Component {
   };
 
   handleMouseOverSquare = (square) => {
-    if (this.state.toggleDelete) {
-      this.setState({selectedSquare: square});
+    const { toggleDelete, toggleSparePiece } = this.state;
+
+    if (toggleDelete || toggleSparePiece) {
+      this.setState({ selectedSquare: square });
     }
   };
 
   handleMouseOutSquare = () => {
-    if (this.state.toggleDelete) {
+    const { toggleDelete, toggleSparePiece } = this.state;
+
+    if (toggleDelete || toggleSparePiece) {
       this.setState({selectedSquare: null});
     }
   };
 
   onSquareClick = (square) => {
-    if (this.state.toggleDelete) {
+    const { toggleDelete, selectedSparePiece } = this.state;
+
+    if (toggleDelete) {
       const newFen = {...this.state.fen};
       newFen[square] = squareStates.EMPTY;
 
@@ -61,6 +68,27 @@ class SearchBoard extends Component {
         }
       });
     }
+
+    if(selectedSparePiece) {
+      const newFen = {...this.state.fen};
+      newFen[square] = selectedSparePiece;
+
+      this.setState(() => {
+        return {
+          fen: newFen,
+        }
+      });
+
+      this.setState({ toggleSparePiece: !this.state.toggleSparePiece })
+
+      const clickedPiece = document.querySelectorAll('.clicked-piece')[0];
+
+      if (clickedPiece) {
+        clickedPiece.style = '';
+        clickedPiece.classList.remove('clicked-piece');
+      }
+    }
+
   }
 
   deleteHandler = () => {
@@ -78,13 +106,10 @@ class SearchBoard extends Component {
   }
 
   handleChange = (e) => {
-
     this.setState({ inputData: e.target.value });
-
   }
 
   sendRequestHandler = () => {
-
     const newFen = objToFen(this.state.fen);
 
     const data = {
@@ -113,13 +138,21 @@ class SearchBoard extends Component {
     this.setState({ showPopup: !this.state.showPopup });
   }
 
+  onPieceClick = (piece) => {
+    this.setState({
+      selectedSparePiece: piece,
+      toggleSparePiece: !this.state.toggleSparePiece
+    });
+
+  }
+
   render() {
-    const {fen, selectedSquare} = this.state;
+    const { fen, selectedSquare, toggleDelete } = this.state;
 
     return (
       <div style={chessboardWrapper}>
         <div style={col}>
-          <button style={{...deleteButtonStyle, ...(this.state.toggleDelete ? toggledStyle : {})}}
+          <button style={{...deleteButtonStyle, ...(toggleDelete ? toggledStyle : {})}}
                   onClick={this.deleteHandler}>
             <img src={deleteSvg} alt="delete"/>
           </button>
@@ -131,12 +164,17 @@ class SearchBoard extends Component {
           dropOffBoard="trash"
           onDrop={this.onDrop}
           onSquareClick={this.onSquareClick}
+          onPieceClick={this.onPieceClick}
           onMouseOverSquare={this.handleMouseOverSquare}
           onMouseOutSquare={this.handleMouseOutSquare}
           squareStyles={{
             [selectedSquare]: {
-              background: 'radial-gradient(circle, #ff0000 36%, transparent 40%)',
-            },
+              boxShadow: `${toggleDelete ? 'inset 0 0 1px 4px red' : 'inset 0 0 1px 4px yellow'}`
+            }
+          }}
+          boardStyle={{
+            borderRadius: '5px',
+            boxShadow: `0 5px 15px rgba(0, 0, 0, 0.5)`
           }}
         />
 
@@ -163,7 +201,8 @@ export default SearchBoard;
 const chessboardWrapper = {
   display: 'flex',
   alignItems: 'flex-start',
-  gap: "20px"
+  gap: "20px",
+  position: 'relative'
 }
 
 const col = {
@@ -187,14 +226,20 @@ const buttonStyles = {
 
 const toggledStyle = {
   color: '#ffffff',
-  backgroundColor: '#ff0000',
-  border: '1px solid #ff0000',
+  border: '3px solid #ff0000'
 }
 
 const deleteButtonStyle = {
   display: 'flex',
   alignItems: 'center',
+  position: 'absolute',
+  top: '50%',
+  left: '-45px',
+  transform: 'translateY(-50%)',
+  marginTop: '-100px',
   padding: '5px',
-  border: '1px solid #808080',
+  cursor: 'pointer',
+  backgroundColor: 'transparent',
+  border: '3px solid transparent',
   borderRadius: '8px'
 }
