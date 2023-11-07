@@ -117,7 +117,7 @@ class SearchBoard extends Component {
       inputData: this.state.inputData
     }
 
-    axios.get('https://bi0plb9pba.execute-api.us-east-1.amazonaws.com/api/faster/board', {
+    axios.get('https://api-qa.chessfinder.org/api/faster/board', {
       data
     })
       .then(response => {
