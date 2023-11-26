@@ -1,59 +1,35 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-
+import { connect } from "react-redux";
+import { setPieceInfo, setDeleteModeFalse } from "../redux/actions";
 import Piece from './Piece';
 import Chessboard from './index';
-import {squareStates} from "./Constants";
-
-function SparePiecesTop() {
-  return <SparePieces top />;
-}
-
-function SparePiecesBottom() {
-  return <SparePieces />;
-}
-
-function SparePiecesLeft() {
-  return <SparePieces left />;
-}
+import { squareStates } from "./Constants";
 
 class SparePieces extends Component {
-  static propTypes = {
-    top: PropTypes.bool,
-    left: PropTypes.bool
-  };
 
   constructor(props) {
     super(props);
-    this.state = {
-      selectedPiece: null
-    }
   }
 
-  handlePieceClick = (piece) => {
-    this.setState({
-      selectedPiece: piece
-    });
+  handleSparePieceClick = (piece) => {
+    this.props.setPieceInfo(piece);
+    this.props.setDeleteModeFalse();
   };
 
-
-  static Top = SparePiecesTop;
-  static Bottom = SparePiecesBottom;
-  static Left = SparePiecesLeft;
-
   getOrientation = orientation => {
-    const { top, left } = this.props;
+    const { top, bottom } = this.props;
 
     if(top) {
       return orientation === 'black' ? 'white' : 'black';
-    } else if(left) {
-      return orientation === 'common';
+    } else if(bottom) {
+      return orientation === 'black' ? 'black' : 'white';
     }
-    return orientation === 'black' ? 'black' : 'white';
+     return orientation === 'common';
+
   };
 
   render() {
-    const { selectedPiece } = this.state;
+    const { isSparePiece, sparePiece, isToggleSparePiece } = this.props.pieceInfo;
 
     return (
         <Chessboard.Consumer>
@@ -69,10 +45,9 @@ class SparePieces extends Component {
                   {spares.map(p => (
                       <div data-testid={`spare-${p}`}
                            key={p}
-                           onClick={() => this.handlePieceClick(p)}
-                           className={selectedPiece === p ? 'clicked-piece' : ''}
+                           onClick={() => this.handleSparePieceClick(p)}
                            style={{
-                            boxShadow: (selectedPiece === p) ? 'inset 0 0 1px 4px yellow' : ''
+                            boxShadow: (sparePiece === p && isSparePiece && !isToggleSparePiece)  ? 'inset 0 0 1px 4px yellow' : ''
                           }}
                       >
                         <Piece
@@ -104,7 +79,17 @@ class SparePieces extends Component {
   }
 }
 
-export default SparePieces;
+const mapStateToProps = (state) => ({
+  pieceInfo: state.pieceInfo,
+  deletePieces: state.deletePieces
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setPieceInfo: (data) => dispatch(setPieceInfo(data)),
+  setDeleteModeFalse: () => dispatch(setDeleteModeFalse())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SparePieces);
 
 const spareStyles = width => ({
   width,

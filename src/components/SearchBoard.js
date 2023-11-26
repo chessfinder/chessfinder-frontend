@@ -1,18 +1,17 @@
-import React, {Component} from 'react'; // eslint-disable-line no-unused-vars
-import Chessboard from '../Chessboard';
-import {objToFen} from "../Chessboard/helpers";
-import {DEFAULT_FEN, PIECE_FROM_SPARE, squareStates} from "../Chessboard/Constants";
-import deleteSvg from "../img/delete.svg";
-import Popup from "./Popup";
+import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
+import { connect } from "react-redux";
+import { toggleDeleteMode } from "../redux/actions";
 import axios from 'axios';
+import Chessboard from '../Chessboard';
+import { objToFen } from "../Chessboard/helpers";
+import {DEFAULT_FEN, PIECE_FROM_SPARE, squareStates} from "../Chessboard/Constants";
+import Popup from "./Popup";
+import deleteSvg from "../img/delete.svg";
 
 class SearchBoard extends Component {
   state = {
     fen: DEFAULT_FEN,
-    toggleDelete: false,
-    toggleSparePiece: false,
     selectedSquare: null,
-    selectedSparePiece: null,
     showPopup: false,
     message: 'Hello from ParentComponent',
     inputData: '',
@@ -20,7 +19,6 @@ class SearchBoard extends Component {
   };
 
   onDrop = ({sourceSquare, targetSquare, piece}) => {
-    this.setState({toggleDelete: false});
 
     if (sourceSquare === targetSquare) return;
 
@@ -40,25 +38,26 @@ class SearchBoard extends Component {
   };
 
   handleMouseOverSquare = (square) => {
-    const { toggleDelete, toggleSparePiece } = this.state;
+    const { isDeleteMode } = this.props;
 
-    if (toggleDelete || toggleSparePiece) {
+    if (isDeleteMode) {
       this.setState({ selectedSquare: square });
     }
   };
 
   handleMouseOutSquare = () => {
-    const { toggleDelete, toggleSparePiece } = this.state;
+    const { isDeleteMode } = this.props;
 
-    if (toggleDelete || toggleSparePiece) {
+    if (isDeleteMode) {
       this.setState({selectedSquare: null});
     }
   };
 
   onSquareClick = (square) => {
-    const { toggleDelete, selectedSparePiece } = this.state;
+    const { isDeleteMode } = this.props;
+    const { isSparePiece, sparePiece } = this.props.pieceInfo;
 
-    if (toggleDelete) {
+    if (isDeleteMode) {
       const newFen = {...this.state.fen};
       newFen[square] = squareStates.EMPTY;
 
@@ -69,9 +68,9 @@ class SearchBoard extends Component {
       });
     }
 
-    if(selectedSparePiece) {
+    if(isSparePiece) {
       const newFen = {...this.state.fen};
-      newFen[square] = selectedSparePiece;
+      newFen[square] = sparePiece;
 
       this.setState(() => {
         return {
@@ -79,30 +78,7 @@ class SearchBoard extends Component {
         }
       });
 
-      this.setState({ toggleSparePiece: !this.state.toggleSparePiece })
-
-      const clickedPiece = document.querySelectorAll('.clicked-piece')[0];
-
-      if (clickedPiece) {
-        clickedPiece.style = '';
-        clickedPiece.classList.remove('clicked-piece');
-      }
     }
-
-  }
-
-  deleteHandler = () => {
-    this.onSquareClick();
-
-    this.setState((prevState) => ({
-      toggleDelete: !prevState.toggleDelete,
-    }));
-
-    this.setState(() => {
-      return {
-        fen: this.state.fen,
-      }
-    });
   }
 
   handleChange = (e) => {
@@ -127,33 +103,22 @@ class SearchBoard extends Component {
         console.error(error);
       });
 
-    this.setState((prevState) => ({
-      toggleDelete: !prevState.toggleDelete,
-      showPopup: true
-    }));
-
+    this.setState(() => ({ showPopup: true }));
   }
 
   togglePopup = () => {
     this.setState({ showPopup: !this.state.showPopup });
   }
 
-  onPieceClick = (piece) => {
-    this.setState({
-      selectedSparePiece: piece,
-      toggleSparePiece: !this.state.toggleSparePiece
-    });
-
-  }
-
   render() {
-    const { fen, selectedSquare, toggleDelete } = this.state;
+    const { fen, selectedSquare } = this.state;
+    const { isDeleteMode } = this.props
 
     return (
       <div style={chessboardWrapper}>
         <div style={col}>
-          <button style={{...deleteButtonStyle, ...(toggleDelete ? toggledStyle : {})}}
-                  onClick={this.deleteHandler}>
+          <button style={{...deleteButtonStyle, ...(isDeleteMode ? toggledStyle : {})}}
+                  onClick={() => this.props.toggleDeleteMode()}>
             <img src={deleteSvg} alt="delete"/>
           </button>
         </div>
@@ -164,12 +129,11 @@ class SearchBoard extends Component {
           dropOffBoard="trash"
           onDrop={this.onDrop}
           onSquareClick={this.onSquareClick}
-          onPieceClick={this.onPieceClick}
           onMouseOverSquare={this.handleMouseOverSquare}
           onMouseOutSquare={this.handleMouseOutSquare}
           squareStyles={{
             [selectedSquare]: {
-              boxShadow: `${toggleDelete ? 'inset 0 0 1px 4px red' : 'inset 0 0 1px 4px yellow'}`
+              boxShadow: `${isDeleteMode ? 'inset 0 0 1px 4px red' : 'inset 0 0 1px 4px yellow'}`
             }
           }}
           boardStyle={{
@@ -177,7 +141,6 @@ class SearchBoard extends Component {
             boxShadow: `0 5px 15px rgba(0, 0, 0, 0.5)`
           }}
         />
-
         <div style={col}>
           <input type="text"
                  placeholder="Username"
@@ -196,7 +159,16 @@ class SearchBoard extends Component {
   }
 }
 
-export default SearchBoard;
+const mapStateToProps = (state) => ({
+  pieceInfo: state.pieceInfo,
+  isDeleteMode: state.isDeleteMode
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  toggleDeleteMode: () => dispatch(toggleDeleteMode()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchBoard);
 
 const chessboardWrapper = {
   display: 'flex',
