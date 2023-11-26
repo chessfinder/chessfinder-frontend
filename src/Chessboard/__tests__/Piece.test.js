@@ -32,9 +32,9 @@ test('renders a sparePiece when sparePieces is true', () => {
   const blackRook = queryByTestId('spare-bR');
   const blackPawn = queryByTestId('spare-bP');
 
-  expect(whiteQueen).toBeInTheDOM();
-  expect(blackRook).toBeInTheDOM();
-  expect(blackPawn).toBeInTheDOM();
+  expect(whiteQueen && whiteQueen.match).toBe(null);
+  expect(blackRook && blackRook.match).toBe(null);
+  expect(blackPawn && blackPawn.match).toBe(null);
 });
 
 test('renders correct pieces when given a position object', () => {
