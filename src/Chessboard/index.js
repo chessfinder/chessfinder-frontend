@@ -16,7 +16,7 @@ import {
 import CustomDragLayer from './CustomDragLayer';
 import defaultPieces from './svg/chesspieces/standard';
 import ErrorBoundary from './ErrorBoundary';
-import {DEFAULT_FEN} from "./Constants";
+import { DEFAULT_FEN } from "./Constants";
 
 const ChessboardContext = React.createContext();
 
@@ -453,10 +453,10 @@ class Chessboard extends Component {
           }}
         >
           <div style={{position: 'relative'}}>
-            {getScreenDimensions && sparePieces && <SparePieces.Top />}
+            {getScreenDimensions && sparePieces && <SparePieces top />}
             {getScreenDimensions && <Board />}
-            {getScreenDimensions && sparePieces && <SparePieces.Bottom />}
-            {getScreenDimensions && sparePieces && <div style={commonPiecesStyles}><SparePieces.Left /></div>}
+            {getScreenDimensions && sparePieces && <SparePieces bottom />}
+            {getScreenDimensions && sparePieces && <div style={commonPiecesStyles}><SparePieces left /></div>}
           </div>
           <CustomDragLayer
             width={this.getWidth()}
