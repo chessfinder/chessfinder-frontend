@@ -72,3 +72,10 @@ export const DEFAULT_FEN = {
   "h7": "?",
   "h8": "?"
 }
+
+export const CHESSBOARD_PLATFORM = 'CHESS_DOT_COM';
+
+export const STATUSES = {
+  failed: '#bf1A2f',
+  success: '#396150'
+}

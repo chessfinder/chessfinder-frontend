@@ -1,21 +1,23 @@
 import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
 import { connect } from "react-redux";
-import { toggleDeleteMode } from "../redux/actions";
-import axios from 'axios';
+import {toggleDeleteMode, togglePopup} from "../redux/actions";
 import Chessboard from '../Chessboard';
 import { objToFen } from "../Chessboard/helpers";
-import {DEFAULT_FEN, PIECE_FROM_SPARE, squareStates} from "../Chessboard/Constants";
-import Popup from "./Popup";
+import {CHESSBOARD_PLATFORM, DEFAULT_FEN, PIECE_FROM_SPARE, squareStates, STATUSES} from "../Chessboard/Constants";
 import deleteSvg from "../img/delete.svg";
+import { MAKE_REQUEST } from "../helpers/makeRequest";
+import Popup from "./Popup";
+import ProgressBar from "./ProgressBar";
 
 class SearchBoard extends Component {
   state = {
     fen: DEFAULT_FEN,
     selectedSquare: null,
-    showPopup: false,
-    message: 'Hello from ParentComponent',
     inputData: '',
-    responseData: null
+    statusId: null,
+    downloadId: null,
+    downloadGames: null,
+    popupMessage: ''
   };
 
   onDrop = ({sourceSquare, targetSquare, piece}) => {
@@ -81,38 +83,40 @@ class SearchBoard extends Component {
     }
   }
 
-  handleChange = (e) => {
-    this.setState({ inputData: e.target.value });
-  }
+  sendRequestHandler = async () => {
+    const { inputData } = this.state;
+    const platform = CHESSBOARD_PLATFORM;
 
-  sendRequestHandler = () => {
-    const newFen = objToFen(this.state.fen);
+    try {
+      const downLoadGamesRequestData = { username: inputData, platform };
+      const { downloadId } = await MAKE_REQUEST('faster/game', 'post', downLoadGamesRequestData);
 
-    const data = {
-      newFen,
-      inputData: this.state.inputData
+      this.setState({ downloadId });
+
+      if (downloadId) {
+        const downloadGamesRequestData = `faster/game?downloadId=${downloadId}`;
+        const downloadGames = await MAKE_REQUEST(downloadGamesRequestData, 'get');
+
+        this.setState({ downloadGames });
+        this.props.togglePopup('success');
+
+      }
+    } catch (error) {
+
+      this.props.togglePopup('failed');
+      this.setState({ popupMessage: error.data.msg })
+
     }
 
-    axios.get('https://api-qa.chessfinder.org/api/faster/board', {
-      data
-    })
-      .then(response => {
-        console.log(response.data, 'response');
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    // Log the final state
+    console.log(this.state.downloadGames);
+  };
 
-    this.setState(() => ({ showPopup: true }));
-  }
 
-  togglePopup = () => {
-    this.setState({ showPopup: !this.state.showPopup });
-  }
 
   render() {
-    const { fen, selectedSquare } = this.state;
-    const { isDeleteMode } = this.props
+    const { fen, selectedSquare, popupMessage, downloadGames } = this.state;
+    const { isDeleteMode, showPopup } = this.props;
 
     return (
       <div style={chessboardWrapper}>
@@ -146,14 +150,25 @@ class SearchBoard extends Component {
                  placeholder="Username"
                  style={inputStyles}
                  value={this.state.inputData}
-                 onChange={this.handleChange}
+                 onChange={(e) => this.setState({ inputData: e.target.value })}
           />
           <button onClick={this.sendRequestHandler} style={buttonStyles}>
             Send Request
           </button>
         </div>
 
-        <Popup showPopup={this.state.showPopup} togglePopup={this.togglePopup} />
+        {showPopup && popupMessage &&
+          <Popup>
+            <h2>{popupMessage}</h2>
+          </Popup>
+        }
+
+        {showPopup && downloadGames &&
+          <Popup>
+            <ProgressBar progress={downloadGames.done / downloadGames.total * 100} />
+          </Popup>
+        }
+        
       </div>
     );
   }
@@ -161,11 +176,13 @@ class SearchBoard extends Component {
 
 const mapStateToProps = (state) => ({
   pieceInfo: state.pieceInfo,
-  isDeleteMode: state.isDeleteMode
+  isDeleteMode: state.isDeleteMode,
+  showPopup: state.showPopup
 });
 
 const mapDispatchToProps = (dispatch) => ({
   toggleDeleteMode: () => dispatch(toggleDeleteMode()),
+  togglePopup: (popupStatus) => dispatch(togglePopup(popupStatus))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchBoard);

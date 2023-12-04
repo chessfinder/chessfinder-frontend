@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
-import ProgressBar from "./ProgressBar";
+// import ProgressBar from "./ProgressBar";
+import {Close} from "./svgIcons/Close";
+import {STATUSES} from "../Chessboard/Constants";
+import {connect} from "react-redux";
+import {toggleDeleteMode, togglePopup} from "../redux/actions";
 
 class Popup extends Component {
   constructor(props) {
@@ -25,21 +29,20 @@ class Popup extends Component {
   }
 
   render() {
-    const { showPopup } = this.props;
+    const { showPopup, popupStatus } = this.props;
 
     return (
       showPopup && (
         <div style={popupOverlay}>
           <div style={popupStyles}>
-            <div style={popupHeaderStyles}>
-              <button style={popupCloseBtnStyles} onClick={this.props.togglePopup}>
-                x
+            <div style={popupStatus === 'failed' ? popupHeaderStyles(STATUSES.failed) : popupHeaderStyles(STATUSES.success)}>
+              <button style={popupCloseBtnStyles} onClick={() => this.props.togglePopup()}>
+                <Close />
               </button>
 
-              {console.log(showPopup)}
             </div>
             <div style={popupBodyStyles}>
-              <ProgressBar progress={this.state.progress} />
+              {this.props.children}
             </div>
           </div>
         </div>
@@ -48,7 +51,16 @@ class Popup extends Component {
   }
 }
 
-export default Popup;
+const mapStateToProps = (state) => ({
+  showPopup: state.showPopup,
+  popupStatus: state.popupStatus
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  togglePopup: (popupStatus) => dispatch(togglePopup(popupStatus))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Popup);
 
 const popupOverlay = {
   position: 'fixed',
@@ -73,17 +85,20 @@ const popupStyles = {
 
 const popupBodyStyles = {
   padding: '16px',
+  textAlign: 'center'
 }
 
-const popupHeaderStyles = {
+const popupHeaderStyles = backgroundColor => ({
   display: 'flex',
   justifyContent: 'flex-end',
   padding: '16px',
-}
+  borderRadius: '8px 8px 0 0',
+  backgroundColor
+});
 
 const popupCloseBtnStyles = {
   fontSize: '18px',
   cursor: 'pointer',
   backgroundColor: 'transparent',
   border: '0 none'
-}
+};

@@ -7,9 +7,9 @@ class ProgressBar extends Component {
     const progressBarStyle = {
       width: `${progress}%`,
       height: '100%',
-      paddingInline: '8px',
+      paddingInline: `${progress === 0 ? '0px' : '8px'}`,
       background: 'linear-gradient(to right, #e5405e 0%, #ffdb3a 45%, #3fffa2 100%)',
-      borderRadius: '16px',
+      borderRadius: '32px',
     };
 
     return (
