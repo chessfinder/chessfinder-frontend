@@ -5,6 +5,7 @@ const initialState = {
     isToggleSparePiece: false,
     sparePiece: null
   },
+  showPopup: false
 };
 
 export default function rootReducer(state = initialState, action) {
@@ -36,6 +37,12 @@ export default function rootReducer(state = initialState, action) {
       return {
         ...state,
         isDeleteMode: false,
+      };
+    case 'TOGGLE_POPUP':
+      return {
+        ...state,
+        showPopup: !state.showPopup,
+        popupStatus: action.status
       };
     default:
       return state;
