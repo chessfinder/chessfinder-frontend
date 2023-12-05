@@ -77,5 +77,6 @@ export const CHESSBOARD_PLATFORM = 'CHESS_DOT_COM';
 
 export const STATUSES = {
   failed: '#bf1A2f',
+  warning: '#f0aD4e',
   success: '#396150'
 }

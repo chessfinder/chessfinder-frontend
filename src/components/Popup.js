@@ -35,7 +35,7 @@ class Popup extends Component {
       showPopup && (
         <div style={popupOverlay}>
           <div style={popupStyles}>
-            <div style={popupStatus === 'failed' ? popupHeaderStyles(STATUSES.failed) : popupHeaderStyles(STATUSES.success)}>
+            <div style={popupStatus === 'failed' ? popupHeaderStyles(STATUSES.failed) : popupStatus === 'warning' ? popupHeaderStyles(STATUSES.warning) : popupHeaderStyles(STATUSES.success)}>
               <button style={popupCloseBtnStyles} onClick={() => this.props.togglePopup()}>
                 <Close />
               </button>

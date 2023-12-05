@@ -97,7 +97,8 @@ class SearchBoard extends Component {
         const downloadGamesRequestData = `faster/game?downloadId=${downloadId}`;
         const downloadGames = await MAKE_REQUEST(downloadGamesRequestData, 'get');
 
-        this.setState({ downloadGames });
+        this.setState({ downloadGames, popupMessage: '' });
+
         this.props.togglePopup('success');
 
       }
@@ -107,9 +108,6 @@ class SearchBoard extends Component {
       this.setState({ popupMessage: error.data.msg })
 
     }
-
-    // Log the final state
-    console.log(this.state.downloadGames);
   };
 
 
@@ -164,9 +162,12 @@ class SearchBoard extends Component {
         }
 
         {showPopup && downloadGames &&
-          <Popup>
-            <ProgressBar progress={downloadGames.done / downloadGames.total * 100} />
-          </Popup>
+          <>
+            <Popup>
+              <ProgressBar progress={downloadGames.done / downloadGames.total * 100} />
+            </Popup>
+          </>
+
         }
         
       </div>
