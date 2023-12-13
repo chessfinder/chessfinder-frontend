@@ -98,6 +98,7 @@
     "roughjs": "2.2.3",
     "semantic-release": "^17.2.3",
     "style-loader": "0.21.0",
+    "styled-components": "^6.1.1",
     "travis-deploy-once": "^5.0.0",
     "webpack": "4.12.0",
     "webpack-bundle-analyzer": "2.13.1",
