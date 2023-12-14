@@ -1,5 +1,14 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import SearchBoard from './components/SearchBoard';
+import styled from 'styled-components';
+
+const BoardContainer = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100vw
+`;
 
 class App extends Component {
   state = {
@@ -15,19 +24,11 @@ class App extends Component {
 
   render() {
     return (
-      <div className="app" style={boardsContainer}>
+      <BoardContainer className="app">
         <SearchBoard/>
-      </div>
+      </BoardContainer>
     );
   }
 }
 
 export default App;
-
-const boardsContainer = {
-  display: 'flex',
-  justifyContent: 'space-around',
-  alignItems: 'center',
-  flexWrap: 'wrap',
-  width: '100vw'
-};

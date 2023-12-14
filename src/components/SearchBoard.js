@@ -1,13 +1,60 @@
 import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
 import { connect } from "react-redux";
-import {toggleDeleteMode, togglePopup} from "../redux/actions";
+import { setPopupStatus, toggleDeleteMode, togglePopup } from "../redux/actions";
 import Chessboard from '../Chessboard';
-import { objToFen } from "../Chessboard/helpers";
-import {CHESSBOARD_PLATFORM, DEFAULT_FEN, PIECE_FROM_SPARE, squareStates, STATUSES} from "../Chessboard/Constants";
-import deleteSvg from "../img/delete.svg";
+import { CHESSBOARD_PLATFORM, DEFAULT_FEN, PIECE_FROM_SPARE, squareStates } from "../Chessboard/Constants";
 import { MAKE_REQUEST } from "../helpers/makeRequest";
 import Popup from "./Popup";
 import ProgressBar from "./ProgressBar";
+import deleteSvg from "../img/delete.svg";
+import styled from 'styled-components';
+
+const ChessboardWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  position: relative 
+`;
+
+const Col = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-block: 67px;
+`;
+
+const DeleteButton = styled.button`
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: -45px;
+  transform: translateY(-50%);
+  margin-top: -100px;
+  padding: 5px;
+  cursor: pointer;
+  background-color: transparent;
+  border: 3px solid transparent;
+  border-radius: 8px;
+
+  ${({ isDeleteMode }) => isDeleteMode && `
+    color: #ffffff;
+    border: 3px solid #ff0000;
+  `}
+`;
+
+const Input = styled.input`
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #808080;
+`;
+
+const Button = styled.button`
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #808080;
+`;
 
 class SearchBoard extends Component {
   state = {
@@ -17,7 +64,9 @@ class SearchBoard extends Component {
     statusId: null,
     downloadId: null,
     downloadGames: null,
-    popupMessage: ''
+    popupMessage: '',
+    progress: 0,
+    hasProgressLoader: false
   };
 
   onDrop = ({sourceSquare, targetSquare, piece}) => {
@@ -85,45 +134,80 @@ class SearchBoard extends Component {
 
   sendRequestHandler = async () => {
     const { inputData } = this.state;
-    const platform = CHESSBOARD_PLATFORM;
 
     try {
-      const downLoadGamesRequestData = { username: inputData, platform };
+      const downLoadGamesRequestData = { username: inputData, CHESSBOARD_PLATFORM };
       const { downloadId } = await MAKE_REQUEST('faster/game', 'post', downLoadGamesRequestData);
 
       this.setState({ downloadId });
 
       if (downloadId) {
-        const downloadGamesRequestData = `faster/game?downloadId=${downloadId}`;
-        const downloadGames = await MAKE_REQUEST(downloadGamesRequestData, 'get');
-
-        this.setState({ downloadGames, popupMessage: '' });
-
-        this.props.togglePopup('success');
-
+        this.props.togglePopup('warning');
+        this.longPollProgress(downloadId);
       }
+
     } catch (error) {
-
       this.props.togglePopup('failed');
-      this.setState({ popupMessage: error.data.msg })
-
+      this.setState({ popupMessage: error.data.msg });
     }
   };
 
+  longPollProgress = async (downloadId, startTime = new Date().getTime()) => {
+    const { showPopup } = this.props;
+    const { progress } = this.state;
+    const timeoutThreshold = 30000;
 
+    try {
+      const downloadGamesRequestData = `faster/game?downloadId=${downloadId}`;
+      const pollResponse = await MAKE_REQUEST(downloadGamesRequestData, 'get');
+
+      this.setState(() => ({
+        downloadGames: pollResponse,
+        popupMessage: '',
+        progress: (pollResponse.done / pollResponse.total) * 100,
+        hasProgressLoader: true
+      }));
+
+      const currentTime = new Date().getTime();
+      const elapsedTime = currentTime - startTime;
+
+      if (elapsedTime >= timeoutThreshold) {
+
+        this.setState({ popupMessage: 'Something goes wrong' });
+        this.props.setPopupStatus('failed');
+
+      } else {
+        if (progress === 100) {
+          console.log('progress is 100')
+          this.props.setPopupStatus('success');
+          this.setState({ hasProgressLoader: false });
+
+          return;
+        }
+
+        showPopup && setTimeout(() => this.longPollProgress(downloadId, startTime), 1000);
+      }
+
+    } catch (error) {
+      this.props.togglePopup('failed');
+      this.setState({ popupMessage: error.data.msg });
+    }
+  };
 
   render() {
-    const { fen, selectedSquare, popupMessage, downloadGames } = this.state;
+    const { fen, selectedSquare, popupMessage, progress, hasProgressLoader } = this.state;
     const { isDeleteMode, showPopup } = this.props;
 
     return (
-      <div style={chessboardWrapper}>
-        <div style={col}>
-          <button style={{...deleteButtonStyle, ...(isDeleteMode ? toggledStyle : {})}}
-                  onClick={() => this.props.toggleDeleteMode()}>
+      <ChessboardWrapper>
+        <Col>
+          <DeleteButton
+            onClick={() => this.props.toggleDeleteMode()}
+            isDeleteMode={isDeleteMode}
+          >
             <img src={deleteSvg} alt="delete"/>
-          </button>
-        </div>
+          </DeleteButton>
+        </Col>
 
         <Chessboard
           sparePieces
@@ -143,34 +227,29 @@ class SearchBoard extends Component {
             boxShadow: `0 5px 15px rgba(0, 0, 0, 0.5)`
           }}
         />
-        <div style={col}>
-          <input type="text"
-                 placeholder="Username"
-                 style={inputStyles}
-                 value={this.state.inputData}
-                 onChange={(e) => this.setState({ inputData: e.target.value })}
+        <Col>
+          <Input
+            type="text"
+            placeholder="Username"
+            value={this.state.inputData}
+            onChange={(e) => this.setState({ inputData: e.target.value })}
           />
-          <button onClick={this.sendRequestHandler} style={buttonStyles}>
+          <Button onClick={this.sendRequestHandler}>
             Send Request
-          </button>
-        </div>
+          </Button>
+        </Col>
 
-        {showPopup && popupMessage &&
-          <Popup>
-            <h2>{popupMessage}</h2>
-          </Popup>
-        }
-
-        {showPopup && downloadGames &&
+        {showPopup &&
           <>
             <Popup>
-              <ProgressBar progress={downloadGames.done / downloadGames.total * 100} />
+              { popupMessage ? <h2>{popupMessage}</h2>
+                : <ProgressBar hasProgressLoader={hasProgressLoader} progress={Math.floor(progress)} />
+              }
             </Popup>
           </>
-
         }
         
-      </div>
+      </ChessboardWrapper>
     );
   }
 }
@@ -178,58 +257,14 @@ class SearchBoard extends Component {
 const mapStateToProps = (state) => ({
   pieceInfo: state.pieceInfo,
   isDeleteMode: state.isDeleteMode,
-  showPopup: state.showPopup
+  showPopup: state.showPopup,
+  popupStatus: state.popupStatus
 });
 
 const mapDispatchToProps = (dispatch) => ({
   toggleDeleteMode: () => dispatch(toggleDeleteMode()),
+  setPopupStatus: (status) => dispatch(setPopupStatus(status)),
   togglePopup: (popupStatus) => dispatch(togglePopup(popupStatus))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchBoard);
-
-const chessboardWrapper = {
-  display: 'flex',
-  alignItems: 'flex-start',
-  gap: "20px",
-  position: 'relative'
-}
-
-const col = {
-  display: 'flex',
-  flexDirection: 'column',
-  marginBlock: '67px'
-}
-
-const inputStyles = {
-  marginBottom: '10px',
-  padding: '10px',
-  borderRadius: '8px',
-  border: '1px solid #808080'
-}
-
-const buttonStyles = {
-  padding: '10px',
-  borderRadius: '8px',
-  border: '1px solid #808080'
-}
-
-const toggledStyle = {
-  color: '#ffffff',
-  border: '3px solid #ff0000'
-}
-
-const deleteButtonStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  position: 'absolute',
-  top: '50%',
-  left: '-45px',
-  transform: 'translateY(-50%)',
-  marginTop: '-100px',
-  padding: '5px',
-  cursor: 'pointer',
-  backgroundColor: 'transparent',
-  border: '3px solid transparent',
-  borderRadius: '8px'
-}
