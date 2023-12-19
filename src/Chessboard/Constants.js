@@ -75,8 +75,14 @@ export const DEFAULT_FEN = {
 
 export const CHESSBOARD_PLATFORM = 'CHESS_DOT_COM';
 
-export const STATUSES = {
+export const POPUP_STATUSES = {
   failed: '#bf1A2f',
   warning: '#f0aD4e',
   success: '#396150'
+}
+
+export const SEARCH_GAMES_STATUSES = {
+  inProgress: 'IN_PROGRESS',
+  searchedPartially: 'SEARCHED_PARTIALLY',
+  searchedAll: 'SEARCHED_ALL'
 }

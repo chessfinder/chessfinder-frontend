@@ -1,19 +1,27 @@
-import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
-import { connect } from "react-redux";
-import { setPopupStatus, toggleDeleteMode, togglePopup } from "../redux/actions";
+import React, {Component} from 'react'; // eslint-disable-line no-unused-vars
+import {connect} from "react-redux";
+import {setPopupStatus, toggleDeleteMode, togglePopup} from "../redux/actions";
 import Chessboard from '../Chessboard';
-import { CHESSBOARD_PLATFORM, DEFAULT_FEN, PIECE_FROM_SPARE, squareStates } from "../Chessboard/Constants";
-import { MAKE_REQUEST } from "../helpers/makeRequest";
+import {
+  CHESSBOARD_PLATFORM,
+  DEFAULT_FEN,
+  PIECE_FROM_SPARE,
+  SEARCH_GAMES_STATUSES,
+  squareStates
+} from "../Chessboard/Constants";
+import {MAKE_REQUEST} from "../helpers/makeRequest";
+import {objToFen} from "../Chessboard/helpers";
 import Popup from "./Popup";
 import ProgressBar from "./ProgressBar";
 import deleteSvg from "../img/delete.svg";
 import styled from 'styled-components';
+import MatchedGames from "./MatchedGames";
 
 const ChessboardWrapper = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 20px;
-  position: relative 
+  position: relative
 `;
 
 const Col = styled.div`
@@ -36,7 +44,7 @@ const DeleteButton = styled.button`
   border: 3px solid transparent;
   border-radius: 8px;
 
-  ${({ isDeleteMode }) => isDeleteMode && `
+  ${({isDeleteMode}) => isDeleteMode && `
     color: #ffffff;
     border: 3px solid #ff0000;
   `}
@@ -63,9 +71,10 @@ class SearchBoard extends Component {
     inputData: '',
     statusId: null,
     downloadId: null,
-    downloadGames: null,
+    matchedGames: null,
     popupMessage: '',
-    progress: 0,
+    downloadingProgress: 0,
+    searchingProgress: 0,
     hasProgressLoader: false
   };
 
@@ -75,7 +84,7 @@ class SearchBoard extends Component {
 
     const newFen = {...this.state.fen};
 
-    if(sourceSquare !== PIECE_FROM_SPARE) {
+    if (sourceSquare !== PIECE_FROM_SPARE) {
       newFen[sourceSquare] = squareStates.UNKNOWN;
     }
 
@@ -89,15 +98,15 @@ class SearchBoard extends Component {
   };
 
   handleMouseOverSquare = (square) => {
-    const { isDeleteMode } = this.props;
+    const {isDeleteMode} = this.props;
 
     if (isDeleteMode) {
-      this.setState({ selectedSquare: square });
+      this.setState({selectedSquare: square});
     }
   };
 
   handleMouseOutSquare = () => {
-    const { isDeleteMode } = this.props;
+    const {isDeleteMode} = this.props;
 
     if (isDeleteMode) {
       this.setState({selectedSquare: null});
@@ -105,8 +114,8 @@ class SearchBoard extends Component {
   };
 
   onSquareClick = (square) => {
-    const { isDeleteMode } = this.props;
-    const { isSparePiece, sparePiece } = this.props.pieceInfo;
+    const {isDeleteMode} = this.props;
+    const {isSparePiece, sparePiece} = this.props.pieceInfo;
 
     if (isDeleteMode) {
       const newFen = {...this.state.fen};
@@ -119,7 +128,7 @@ class SearchBoard extends Component {
       });
     }
 
-    if(isSparePiece) {
+    if (isSparePiece) {
       const newFen = {...this.state.fen};
       newFen[square] = sparePiece;
 
@@ -133,38 +142,42 @@ class SearchBoard extends Component {
   }
 
   sendRequestHandler = async () => {
-    const { inputData } = this.state;
+    const {inputData} = this.state;
 
     try {
-      const downLoadGamesRequestData = { username: inputData, CHESSBOARD_PLATFORM };
-      const { downloadId } = await MAKE_REQUEST('faster/game', 'post', downLoadGamesRequestData);
+      const downLoadGamesRequestData = {username: inputData, CHESSBOARD_PLATFORM};
+      const {downloadId} = await MAKE_REQUEST('faster/game', 'post', downLoadGamesRequestData);
 
-      this.setState({ downloadId });
+      this.setState({downloadId});
 
       if (downloadId) {
         this.props.togglePopup('warning');
-        this.longPollProgress(downloadId);
+
+        await this.DownloadingLongPollProgress(downloadId);
       }
 
     } catch (error) {
       this.props.togglePopup('failed');
-      this.setState({ popupMessage: error.data.msg });
+      this.setState({popupMessage: error.data.msg});
     }
   };
 
-  longPollProgress = async (downloadId, startTime = new Date().getTime()) => {
-    const { showPopup } = this.props;
-    const { progress } = this.state;
-    const timeoutThreshold = 30000;
+  DownloadingLongPollProgress = async (downloadId, startTime = new Date().getTime()) => {
+    const {showPopup} = this.props;
+    const {downloadingProgress} = this.state;
+    const timeoutThreshold = 90000;
 
     try {
       const downloadGamesRequestData = `faster/game?downloadId=${downloadId}`;
-      const pollResponse = await MAKE_REQUEST(downloadGamesRequestData, 'get');
+      const downloadingPollResponse = await MAKE_REQUEST(downloadGamesRequestData, 'get');
+
+      const total = downloadingPollResponse.total;
+      const done = downloadingPollResponse.done;
+      const downloadingProgressCalc = total !== 0 ? (done / total) * 100 : 0;
 
       this.setState(() => ({
-        downloadGames: pollResponse,
         popupMessage: '',
-        progress: (pollResponse.done / pollResponse.total) * 100,
+        downloadingProgress: downloadingProgressCalc,
         hasProgressLoader: true
       }));
 
@@ -172,31 +185,92 @@ class SearchBoard extends Component {
       const elapsedTime = currentTime - startTime;
 
       if (elapsedTime >= timeoutThreshold) {
-
-        this.setState({ popupMessage: 'Something goes wrong' });
+        this.setState({popupMessage: 'Search timeout'});
         this.props.setPopupStatus('failed');
-
       } else {
-        if (progress === 100) {
-          console.log('progress is 100')
+        if (downloadingProgress === 100) {
           this.props.setPopupStatus('success');
-          this.setState({ hasProgressLoader: false });
+          this.setState({hasProgressLoader: false});
+
+          await this.SearchingLongPollProgress();
 
           return;
         }
 
-        showPopup && setTimeout(() => this.longPollProgress(downloadId, startTime), 1000);
+        showPopup && setTimeout(() => this.DownloadingLongPollProgress(downloadId, startTime), 6000);
       }
 
     } catch (error) {
       this.props.togglePopup('failed');
-      this.setState({ popupMessage: error.data.msg });
+      this.setState({popupMessage: error.data.msg});
+    }
+  };
+
+  SearchingLongPollProgress = async (startTime = new Date().getTime()) => {
+    const {inputData, fen} = this.state;
+    const timeoutThreshold = 90000;
+
+    try {
+      const newObjToFen = objToFen(fen);
+      const boardData = {username: inputData, platform: CHESSBOARD_PLATFORM, board: newObjToFen};
+
+      const {searchId} = await MAKE_REQUEST('faster/board', 'post', boardData);
+
+      if (searchId) {
+        await this.checkSearchStatus(searchId, startTime, timeoutThreshold);
+      }
+    } catch (error) {
+      this.props.togglePopup('failed');
+      this.setState({popupMessage: error.data.msg});
+    }
+  };
+
+  checkSearchStatus = async (searchId, startTime, timeoutThreshold) => {
+    try {
+      const checkSearchStatusRequestData = `faster/board?searchId=${searchId}`;
+      const {total, examined, status, matched} = await MAKE_REQUEST(checkSearchStatusRequestData, 'get');
+
+      this.setState(() => ({
+        popupMessage: '',
+        searchingProgress: (examined / total) * 100
+      }));
+
+      const currentTime = new Date().getTime();
+      const elapsedTime = currentTime - startTime;
+
+      if (elapsedTime >= timeoutThreshold) {
+        this.setState({popupMessage: 'Search timeout'});
+        this.props.setPopupStatus('failed');
+      } else {
+        if (status === SEARCH_GAMES_STATUSES.searchedPartially || status === SEARCH_GAMES_STATUSES.searchedAll) {
+          this.props.setPopupStatus('success');
+          this.setState({
+            matchedGames: matched
+          });
+
+          return;
+        }
+
+        setTimeout(() => this.checkSearchStatus(searchId, startTime, timeoutThreshold), 6000);
+
+      }
+    } catch (error) {
+      this.props.togglePopup('failed');
+      this.setState({popupMessage: error.data.msg});
     }
   };
 
   render() {
-    const { fen, selectedSquare, popupMessage, progress, hasProgressLoader } = this.state;
-    const { isDeleteMode, showPopup } = this.props;
+    const {isDeleteMode, showPopup} = this.props;
+    const {
+      fen,
+      selectedSquare,
+      popupMessage,
+      downloadingProgress,
+      searchingProgress,
+      hasProgressLoader,
+      matchedGames
+    } = this.state;
 
     return (
       <ChessboardWrapper>
@@ -232,7 +306,7 @@ class SearchBoard extends Component {
             type="text"
             placeholder="Username"
             value={this.state.inputData}
-            onChange={(e) => this.setState({ inputData: e.target.value })}
+            onChange={(e) => this.setState({inputData: e.target.value})}
           />
           <Button onClick={this.sendRequestHandler}>
             Send Request
@@ -242,13 +316,33 @@ class SearchBoard extends Component {
         {showPopup &&
           <>
             <Popup>
-              { popupMessage ? <h2>{popupMessage}</h2>
-                : <ProgressBar hasProgressLoader={hasProgressLoader} progress={Math.floor(progress)} />
+              {popupMessage ? <h2>{popupMessage}</h2>
+                :
+                <>
+                  {!matchedGames &&
+                    <>
+                      <ProgressBar
+                        progressText="Downloading games"
+                        hasProgressLoader={hasProgressLoader}
+                        progress={Math.floor(downloadingProgress)}
+                      />
+                      {
+                        downloadingProgress === 100 &&
+                        <ProgressBar
+                          progressText="There are not matched games. Continue searching"
+                          hasProgressLoader={hasProgressLoader}
+                          progress={Math.floor(searchingProgress)}
+                        />
+                      }
+                    </>
+                  }
+
+                  {matchedGames && <MatchedGames matchedGames={matchedGames}/>}
+                </>
               }
             </Popup>
           </>
         }
-        
       </ChessboardWrapper>
     );
   }
