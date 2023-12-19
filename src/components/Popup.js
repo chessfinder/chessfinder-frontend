@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { togglePopup } from "../redux/actions";
 import { Close } from "./svgIcons/Close";
-import { STATUSES } from "../Chessboard/Constants";
+import { POPUP_STATUSES } from "../Chessboard/Constants";
 import styled from 'styled-components';
 
 const PopupOverlay = styled.div`
@@ -20,7 +20,7 @@ const PopupOverlay = styled.div`
 `;
 
 const PopupStyles = styled.div`
-  min-width: 400px;
+  min-width: 420px;
   color: #000000;
   background-color: #ffffff;
   border-radius: 8px;
@@ -91,11 +91,11 @@ export default connect(mapStateToProps, mapDispatchToProps)(Popup);
 const getStatusColor = (status) => {
   switch (status) {
     case 'failed':
-      return STATUSES.failed;
+      return POPUP_STATUSES.failed;
     case 'warning':
-      return STATUSES.warning;
+      return POPUP_STATUSES.warning;
     case 'success':
-      return STATUSES.success;
+      return POPUP_STATUSES.success;
     default:
       return '';
   }

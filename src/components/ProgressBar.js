@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
 import styled, { keyframes } from 'styled-components';
 
-const ProgressBarContainer = styled.div`
+const ProgressBarWrapper = styled.div`
   position: relative;
   margin-block: 16px
+`;
+
+const ProgressText = styled.p`
+  margin-bottom: 0;
+  text-align: left;
+  font-style: italic;
 `;
 
 const LoadingAnimation = keyframes`
@@ -47,23 +53,27 @@ const ProgressLabel = styled.div`
 
 class ProgressBar extends Component {
   render() {
-    const { progress, hasProgressLoader } = this.props;
+    const { progressText, progress, hasProgressLoader } = this.props;
 
     const ProgressInner = styled.div`
       width: ${progress}%;
       height: 100%;
       padding-inline: ${progress === 0 ? '0px' : '8px'};
       background: linear-gradient(to right, #e5405e 0%, #ffdb3a 45%, #3fffa2 100%);
+      transition: width .5s linear;
       border-radius: 32px;
     `;
 
     return (
-      <ProgressBarContainer>
-        <Progress className={hasProgressLoader ? 'progress-loading' : ''}>
-          <ProgressInner />
-        </Progress>
-        <ProgressLabel>{progress}%</ProgressLabel>
-      </ProgressBarContainer>
+      <div>
+        <ProgressText>{progressText}</ProgressText>
+        <ProgressBarWrapper>
+          <Progress className={hasProgressLoader ? 'progress-loading' : ''}>
+            <ProgressInner />
+          </Progress>
+          <ProgressLabel>{progress}%</ProgressLabel>
+        </ProgressBarWrapper>
+      </div>
     );
   }
 }
