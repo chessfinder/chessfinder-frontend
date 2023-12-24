@@ -55,7 +55,7 @@ export const renderChessPiece = ({
       {typeof pieces[piece] === 'function' ? (
         pieces[piece](renderChessPieceArgs)
       ) : (
-        <svg viewBox={`1 1 43 43`} width={width / 8} height={width / 8}>
+        <svg viewBox={`1 1 60 60`} width={width / 8} height={width / 8.5}>
           <g>{pieces[piece]}</g>
         </svg>
       )}

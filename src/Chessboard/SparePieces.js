@@ -47,7 +47,8 @@ class SparePieces extends Component {
                            key={p}
                            onClick={() => this.handleSparePieceClick(p)}
                            style={{
-                            boxShadow: (sparePiece === p && isSparePiece && !isToggleSparePiece)  ? 'inset 0 0 1px 4px yellow' : ''
+                            boxShadow: (sparePiece === p && isSparePiece && !isToggleSparePiece)  ? 'inset 0 0 1px 4px yellow' : '',
+                             borderRadius: '8px'
                           }}
                       >
                         <Piece

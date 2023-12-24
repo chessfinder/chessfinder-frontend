@@ -190,8 +190,8 @@ class Chessboard extends Component {
     dropOffBoard: 'snapback',
     transitionDuration: 300,
     boardStyle: {},
-    lightSquareStyle: { backgroundColor: 'rgb(240, 217, 181)' },
-    darkSquareStyle: { backgroundColor: 'rgb(181, 136, 99)' },
+    lightSquareStyle: { backgroundColor: 'rgb(233 237 204)' },
+    darkSquareStyle: { backgroundColor: 'rgb(118 153 84)' },
     squareStyles: {},
     dropSquareStyle: { boxShadow: 'inset 0 0 1px 4px yellow' },
     calcWidth: () => {},
@@ -403,6 +403,9 @@ class Chessboard extends Component {
   getWidth = () => {
     const { calcWidth, width } = this.props;
     const { screenWidth, screenHeight } = this.state;
+
+    console.log(calcWidth, width)
+
     return calcWidth({ screenWidth, screenHeight })
       ? calcWidth({ screenWidth, screenHeight })
       : width;
