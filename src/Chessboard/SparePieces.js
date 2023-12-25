@@ -4,6 +4,13 @@ import { setPieceInfo, setDeleteModeFalse } from "../redux/actions";
 import Piece from './Piece';
 import Chessboard from './index';
 import { squareStates } from "./Constants";
+import styled from "styled-components";
+
+const SparePiecesDiv = styled.div`
+  @media (max-width: 768px) {
+    display: flex;
+  }
+`;
 
 class SparePieces extends Component {
 
@@ -41,7 +48,7 @@ class SparePieces extends Component {
                     ? ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP']
                     : [squareStates.UNKNOWN, squareStates.OCCUPIED];
             return (
-              <div className='spare-pieces' style={this.props.left ? {} : spareStyles(context.width)}>
+              <SparePiecesDiv style={this.props.left ? {} : spareStyles(context.width)}>
                   {spares.map(p => (
                       <div data-testid={`spare-${p}`}
                            key={p}
@@ -72,7 +79,7 @@ class SparePieces extends Component {
                         />
                       </div>
                   ))}
-                </div>
+                </SparePiecesDiv>
             );
           }}
         </Chessboard.Consumer>

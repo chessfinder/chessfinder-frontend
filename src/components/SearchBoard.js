@@ -63,7 +63,10 @@ const DeleteButton = styled.button`
   }
   
   @media (max-width: 768px) {
-    margin-top: -170px;
+    top: 10px;
+    left: 40%;
+    margin-top: unset;
+    transform: translateX(-50%);
   }
 
   ${({isDeleteMode}) => isDeleteMode && `

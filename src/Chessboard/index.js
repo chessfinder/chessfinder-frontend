@@ -17,6 +17,7 @@ import CustomDragLayer from './CustomDragLayer';
 import defaultPieces from './svg/chesspieces/standard';
 import ErrorBoundary from './ErrorBoundary';
 import { DEFAULT_FEN } from "./Constants";
+import styled from "styled-components";
 
 const ChessboardContext = React.createContext();
 
@@ -27,6 +28,27 @@ export const getPositionObject = position => {
 
   return {};
 };
+
+const ChessboardInner = styled.div`
+  position: relative;
+
+  @media (max-width: 768px) {
+    padding-top: 20px;
+    margin-top: 40px;
+  }
+`;
+
+const CommonPiecesStyles = styled.div`
+  position: absolute;
+  left: -70px;
+  top: 50%;
+  transform: translateY(-50%);
+  
+  @media (max-width: 768px) {
+    top: 0;
+    left: 46%;
+  }
+`;
 
 class Chessboard extends Component {
   static propTypes = {
@@ -455,12 +477,12 @@ class Chessboard extends Component {
             }
           }}
         >
-          <div style={{position: 'relative'}}>
+          <ChessboardInner>
             {getScreenDimensions && sparePieces && <SparePieces top />}
             {getScreenDimensions && <Board />}
             {getScreenDimensions && sparePieces && <SparePieces bottom />}
-            {getScreenDimensions && sparePieces && <div style={commonPiecesStyles}><SparePieces left /></div>}
-          </div>
+            {getScreenDimensions && sparePieces && <CommonPiecesStyles><SparePieces left /></CommonPiecesStyles>}
+          </ChessboardInner>
           <CustomDragLayer
             width={this.getWidth()}
             pieces={pieces}
@@ -475,10 +497,3 @@ class Chessboard extends Component {
 }
 
 export default DragDropContext(MultiBackend(HTML5toTouch))(Chessboard);
-
-const commonPiecesStyles = {
-  position: 'absolute',
-  left: '-70px',
-  top: '50%',
-  transform: 'translateY(-50%)'
-};
