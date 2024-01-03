@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import SearchBoard from './components/SearchBoard';
 import styled from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 
 const BoardContainer = styled.div`
   display: flex;
@@ -8,6 +9,13 @@ const BoardContainer = styled.div`
   align-items: center;
   flex-wrap: wrap;
   width: 100vw
+`;
+
+const GlobalStyles = createGlobalStyle`
+  body {
+    margin: 0;
+    padding: 0;
+  }
 `;
 
 class App extends Component {
@@ -25,6 +33,7 @@ class App extends Component {
   render() {
     return (
       <BoardContainer className="app">
+        <GlobalStyles />
         <SearchBoard/>
       </BoardContainer>
     );

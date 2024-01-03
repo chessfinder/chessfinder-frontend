@@ -5,6 +5,7 @@ import isEqual from 'lodash.isequal';
 import { DragDropContext } from 'react-dnd';
 import MultiBackend from 'react-dnd-multi-backend';
 import HTML5toTouch from 'react-dnd-multi-backend/lib/HTML5toTouch';
+// import deletePng from "../img/delete.png";
 
 import SparePieces from './SparePieces';
 import {
@@ -17,6 +18,9 @@ import CustomDragLayer from './CustomDragLayer';
 import defaultPieces from './svg/chesspieces/standard';
 import ErrorBoundary from './ErrorBoundary';
 import { DEFAULT_FEN } from "./Constants";
+import styled from "styled-components";
+import {connect} from "react-redux";
+import {toggleDeleteMode} from "../redux/actions";
 
 const ChessboardContext = React.createContext();
 
@@ -27,6 +31,60 @@ export const getPositionObject = position => {
 
   return {};
 };
+
+const ChessboardInner = styled.div`
+  position: relative;
+
+  @media (max-width: 768px) {
+    padding-top: 20px;
+    margin-top: 40px;
+  }
+`;
+
+const CommonPiecesStyles = styled.div`
+  position: absolute;
+  left: -70px;
+  top: 50%;
+  transform: translateY(-50%);
+  
+  @media (max-width: 768px) {
+    top: 0;
+    left: 46%;
+  }
+`;
+
+const DeleteButton = styled.button`
+  width: ${props => props.width || '60px'};
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  margin-top: -100px;
+  padding: 5px;
+  cursor: pointer;
+  background-color: transparent;
+  border: 3px solid transparent;
+  border-radius: 8px;
+  
+  img {
+    width: 100%;
+  }
+  
+  @media (max-width: 768px) {
+    top: 10px;
+    left: 40%;
+    margin-top: unset;
+    transform: translate(-170%, -30%);
+  }
+
+  ${({isDeleteMode}) => isDeleteMode && `
+    color: #ffffff;
+    border: 3px solid #ff0000;
+  `}
+  
+`;
 
 class Chessboard extends Component {
   static propTypes = {
@@ -190,8 +248,8 @@ class Chessboard extends Component {
     dropOffBoard: 'snapback',
     transitionDuration: 300,
     boardStyle: {},
-    lightSquareStyle: { backgroundColor: 'rgb(240, 217, 181)' },
-    darkSquareStyle: { backgroundColor: 'rgb(181, 136, 99)' },
+    lightSquareStyle: { backgroundColor: 'rgb(233 237 204)' },
+    darkSquareStyle: { backgroundColor: 'rgb(118 153 84)' },
     squareStyles: {},
     dropSquareStyle: { boxShadow: 'inset 0 0 1px 4px yellow' },
     calcWidth: () => {},
@@ -403,9 +461,10 @@ class Chessboard extends Component {
   getWidth = () => {
     const { calcWidth, width } = this.props;
     const { screenWidth, screenHeight } = this.state;
-    return calcWidth({ screenWidth, screenHeight })
-      ? calcWidth({ screenWidth, screenHeight })
-      : width;
+
+    const responsiveWidth = calcWidth({ screenWidth, screenHeight });
+
+    return screenWidth <= 768 ? '320' : responsiveWidth || width;
   };
 
   render() {
@@ -452,12 +511,23 @@ class Chessboard extends Component {
             }
           }}
         >
-          <div style={{position: 'relative'}}>
+          <ChessboardInner>
             {getScreenDimensions && sparePieces && <SparePieces top />}
             {getScreenDimensions && <Board />}
             {getScreenDimensions && sparePieces && <SparePieces bottom />}
-            {getScreenDimensions && sparePieces && <div style={commonPiecesStyles}><SparePieces left /></div>}
-          </div>
+            {getScreenDimensions && sparePieces &&
+              <CommonPiecesStyles>
+                {/*<DeleteButton*/}
+                {/*  width={this.getWidth() / 9}*/}
+                {/*  onClick={() => this.props.toggleDeleteMode()}*/}
+                {/*  isDeleteMode={this.props.isDeleteMode}*/}
+                {/*>*/}
+                {/*  <img src={deletePng} alt="delete"/>*/}
+                {/*</DeleteButton>*/}
+                <SparePieces left />
+              </CommonPiecesStyles>
+            }
+          </ChessboardInner>
           <CustomDragLayer
             width={this.getWidth()}
             pieces={pieces}
@@ -471,11 +541,13 @@ class Chessboard extends Component {
   }
 }
 
-export default DragDropContext(MultiBackend(HTML5toTouch))(Chessboard);
+// const mapStateToProps = (state) => ({
+//   isDeleteMode: state.isDeleteMode,
+// });
+//
+// const mapDispatchToProps = (dispatch) => ({
+//   toggleDeleteMode: () => dispatch(toggleDeleteMode())
+// });
 
-const commonPiecesStyles = {
-  position: 'absolute',
-  left: '-70px',
-  top: '50%',
-  transform: 'translateY(-50%)'
-};
+// export default DragDropContext(MultiBackend(HTML5toTouch))(connect(mapStateToProps, mapDispatchToProps)(Chessboard));
+export default DragDropContext(MultiBackend(HTML5toTouch))(Chessboard);

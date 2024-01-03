@@ -13,7 +13,7 @@ import {MAKE_REQUEST} from "../helpers/makeRequest";
 import {objToFen} from "../Chessboard/helpers";
 import Popup from "./Popup";
 import ProgressBar from "./ProgressBar";
-import deleteSvg from "../img/delete.svg";
+import deletePng from "../img/delete.png";
 import styled from 'styled-components';
 import MatchedGames from "./MatchedGames";
 
@@ -21,21 +21,35 @@ const ChessboardWrapper = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 20px;
-  position: relative
+  position: relative;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+const ChessboardInnerWrapper = styled.div`
+  display: flex;
 `;
 
 const Col = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
-  margin-block: 67px;
+  margin-block: 85px;
+
+  @media (max-width: 768px) {
+    margin-block: 0 40px;
+  }
 `;
 
 const DeleteButton = styled.button`
+  width: 60px;
   display: flex;
   align-items: center;
   position: absolute;
   top: 50%;
-  left: -45px;
+  left: -70px;
   transform: translateY(-50%);
   margin-top: -100px;
   padding: 5px;
@@ -43,11 +57,24 @@ const DeleteButton = styled.button`
   background-color: transparent;
   border: 3px solid transparent;
   border-radius: 8px;
+  
+  img {
+    width: 100%;
+  }
+  
+  @media (max-width: 768px) {
+    width: 48px;
+    top: 14px;
+    left: 38%;
+    margin-top: unset;
+    transform: translateX(-50%);
+  }
 
   ${({isDeleteMode}) => isDeleteMode && `
     color: #ffffff;
     border: 3px solid #ff0000;
   `}
+  
 `;
 
 const Input = styled.input`
@@ -59,9 +86,15 @@ const Input = styled.input`
 
 const Button = styled.button`
   padding: 10px;
-  border-radius: 8px;
   cursor: pointer;
-  border: 1px solid #808080;
+  color: rgb(255, 255, 255);
+  background-color: rgb(118, 153, 84);
+  border: 1px solid rgb(118, 153, 84);
+  border-radius: 8px;
+  
+  &:hover {
+    background-color: rgb(97 126 69);
+  }
 `;
 
 class SearchBoard extends Component {
@@ -274,33 +307,36 @@ class SearchBoard extends Component {
 
     return (
       <ChessboardWrapper>
-        <Col>
-          <DeleteButton
-            onClick={() => this.props.toggleDeleteMode()}
-            isDeleteMode={isDeleteMode}
-          >
-            <img src={deleteSvg} alt="delete"/>
-          </DeleteButton>
-        </Col>
+        <ChessboardInnerWrapper>
+          <Col>
+            <DeleteButton
+              onClick={() => this.props.toggleDeleteMode()}
+              isDeleteMode={isDeleteMode}
+            >
+              <img src={deletePng} alt="delete"/>
+            </DeleteButton>
+          </Col>
 
-        <Chessboard
-          sparePieces
-          position={fen}
-          dropOffBoard="trash"
-          onDrop={this.onDrop}
-          onSquareClick={this.onSquareClick}
-          onMouseOverSquare={this.handleMouseOverSquare}
-          onMouseOutSquare={this.handleMouseOutSquare}
-          squareStyles={{
-            [selectedSquare]: {
-              boxShadow: `${isDeleteMode ? 'inset 0 0 1px 4px red' : 'inset 0 0 1px 4px yellow'}`
-            }
-          }}
-          boardStyle={{
-            borderRadius: '5px',
-            boxShadow: `0 5px 15px rgba(0, 0, 0, 0.5)`
-          }}
-        />
+          <Chessboard
+            sparePieces
+            position={fen}x
+            dropOffBoard="trash"
+            onDrop={this.onDrop}
+            onSquareClick={this.onSquareClick}
+            onMouseOverSquare={this.handleMouseOverSquare}
+            onMouseOutSquare={this.handleMouseOutSquare}
+            squareStyles={{
+              [selectedSquare]: {
+                boxShadow: `${isDeleteMode ? 'inset 0 0 1px 4px red' : 'inset 0 0 1px 4px yellow'}`
+              }
+            }}
+            boardStyle={{
+              borderRadius: '5px',
+              boxShadow: `0 5px 15px rgba(0, 0, 0, 0.5)`
+            }}
+          />
+        </ChessboardInnerWrapper>
+
         <Col>
           <Input
             type="text"
