@@ -5,6 +5,7 @@ import isEqual from 'lodash.isequal';
 import { DragDropContext } from 'react-dnd';
 import MultiBackend from 'react-dnd-multi-backend';
 import HTML5toTouch from 'react-dnd-multi-backend/lib/HTML5toTouch';
+// import deletePng from "../img/delete.png";
 
 import SparePieces from './SparePieces';
 import {
@@ -18,7 +19,6 @@ import defaultPieces from './svg/chesspieces/standard';
 import ErrorBoundary from './ErrorBoundary';
 import { DEFAULT_FEN } from "./Constants";
 import styled from "styled-components";
-import deletePng from "./img/delete.png";
 import {connect} from "react-redux";
 import {toggleDeleteMode} from "../redux/actions";
 
@@ -467,7 +467,6 @@ class Chessboard extends Component {
     return screenWidth <= 768 ? '320' : responsiveWidth || width;
   };
 
-
   render() {
     const { sparePieces, id, orientation, dropOffBoard } = this.props;
     const {
@@ -518,13 +517,13 @@ class Chessboard extends Component {
             {getScreenDimensions && sparePieces && <SparePieces bottom />}
             {getScreenDimensions && sparePieces &&
               <CommonPiecesStyles>
-                <DeleteButton
-                  width={this.getWidth() / 9}
-                  onClick={() => this.props.toggleDeleteMode()}
-                  isDeleteMode={this.props.isDeleteMode}
-                >
-                  <img src={deletePng} alt="delete"/>
-                </DeleteButton>
+                {/*<DeleteButton*/}
+                {/*  width={this.getWidth() / 9}*/}
+                {/*  onClick={() => this.props.toggleDeleteMode()}*/}
+                {/*  isDeleteMode={this.props.isDeleteMode}*/}
+                {/*>*/}
+                {/*  <img src={deletePng} alt="delete"/>*/}
+                {/*</DeleteButton>*/}
                 <SparePieces left />
               </CommonPiecesStyles>
             }
@@ -542,12 +541,13 @@ class Chessboard extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  isDeleteMode: state.isDeleteMode,
-});
+// const mapStateToProps = (state) => ({
+//   isDeleteMode: state.isDeleteMode,
+// });
+//
+// const mapDispatchToProps = (dispatch) => ({
+//   toggleDeleteMode: () => dispatch(toggleDeleteMode())
+// });
 
-const mapDispatchToProps = (dispatch) => ({
-  toggleDeleteMode: () => dispatch(toggleDeleteMode())
-});
-
-export default DragDropContext(MultiBackend(HTML5toTouch))(connect(mapStateToProps, mapDispatchToProps)(Chessboard));
+// export default DragDropContext(MultiBackend(HTML5toTouch))(connect(mapStateToProps, mapDispatchToProps)(Chessboard));
+export default DragDropContext(MultiBackend(HTML5toTouch))(Chessboard);
