@@ -18,6 +18,9 @@ import defaultPieces from './svg/chesspieces/standard';
 import ErrorBoundary from './ErrorBoundary';
 import { DEFAULT_FEN } from "./Constants";
 import styled from "styled-components";
+import deletePng from "./img/delete.png";
+import {connect} from "react-redux";
+import {toggleDeleteMode} from "../redux/actions";
 
 const ChessboardContext = React.createContext();
 
@@ -48,6 +51,39 @@ const CommonPiecesStyles = styled.div`
     top: 0;
     left: 46%;
   }
+`;
+
+const DeleteButton = styled.button`
+  width: ${props => props.width || '60px'};
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  margin-top: -100px;
+  padding: 5px;
+  cursor: pointer;
+  background-color: transparent;
+  border: 3px solid transparent;
+  border-radius: 8px;
+  
+  img {
+    width: 100%;
+  }
+  
+  @media (max-width: 768px) {
+    top: 10px;
+    left: 40%;
+    margin-top: unset;
+    transform: translate(-170%, -30%);
+  }
+
+  ${({isDeleteMode}) => isDeleteMode && `
+    color: #ffffff;
+    border: 3px solid #ff0000;
+  `}
+  
 `;
 
 class Chessboard extends Component {
@@ -426,12 +462,11 @@ class Chessboard extends Component {
     const { calcWidth, width } = this.props;
     const { screenWidth, screenHeight } = this.state;
 
-    console.log(calcWidth, width)
+    const responsiveWidth = calcWidth({ screenWidth, screenHeight });
 
-    return calcWidth({ screenWidth, screenHeight })
-      ? calcWidth({ screenWidth, screenHeight })
-      : width;
+    return screenWidth <= 768 ? '320' : responsiveWidth || width;
   };
+
 
   render() {
     const { sparePieces, id, orientation, dropOffBoard } = this.props;
@@ -481,7 +516,18 @@ class Chessboard extends Component {
             {getScreenDimensions && sparePieces && <SparePieces top />}
             {getScreenDimensions && <Board />}
             {getScreenDimensions && sparePieces && <SparePieces bottom />}
-            {getScreenDimensions && sparePieces && <CommonPiecesStyles><SparePieces left /></CommonPiecesStyles>}
+            {getScreenDimensions && sparePieces &&
+              <CommonPiecesStyles>
+                <DeleteButton
+                  width={this.getWidth() / 9}
+                  onClick={() => this.props.toggleDeleteMode()}
+                  isDeleteMode={this.props.isDeleteMode}
+                >
+                  <img src={deletePng} alt="delete"/>
+                </DeleteButton>
+                <SparePieces left />
+              </CommonPiecesStyles>
+            }
           </ChessboardInner>
           <CustomDragLayer
             width={this.getWidth()}
@@ -496,4 +542,12 @@ class Chessboard extends Component {
   }
 }
 
-export default DragDropContext(MultiBackend(HTML5toTouch))(Chessboard);
+const mapStateToProps = (state) => ({
+  isDeleteMode: state.isDeleteMode,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  toggleDeleteMode: () => dispatch(toggleDeleteMode())
+});
+
+export default DragDropContext(MultiBackend(HTML5toTouch))(connect(mapStateToProps, mapDispatchToProps)(Chessboard));

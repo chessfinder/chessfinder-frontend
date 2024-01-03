@@ -1,6 +1,6 @@
 import React, {Component} from 'react'; // eslint-disable-line no-unused-vars
 import {connect} from "react-redux";
-import {setPopupStatus, toggleDeleteMode, togglePopup} from "../redux/actions";
+import {setPopupStatus, togglePopup} from "../redux/actions";
 import Chessboard from '../Chessboard';
 import {
   CHESSBOARD_PLATFORM,
@@ -13,7 +13,6 @@ import {MAKE_REQUEST} from "../helpers/makeRequest";
 import {objToFen} from "../Chessboard/helpers";
 import Popup from "./Popup";
 import ProgressBar from "./ProgressBar";
-import deleteSvg from "../img/delete.png";
 import styled from 'styled-components';
 import MatchedGames from "./MatchedGames";
 
@@ -41,39 +40,6 @@ const Col = styled.div`
   @media (max-width: 768px) {
     margin-block: 0 40px;
   }
-`;
-
-const DeleteButton = styled.button`
-  width: 60px;
-  display: flex;
-  align-items: center;
-  position: absolute;
-  top: 50%;
-  left: -70px;
-  transform: translateY(-50%);
-  margin-top: -100px;
-  padding: 5px;
-  cursor: pointer;
-  background-color: transparent;
-  border: 3px solid transparent;
-  border-radius: 8px;
-  
-  img {
-    width: 100%;
-  }
-  
-  @media (max-width: 768px) {
-    top: 10px;
-    left: 40%;
-    margin-top: unset;
-    transform: translateX(-50%);
-  }
-
-  ${({isDeleteMode}) => isDeleteMode && `
-    color: #ffffff;
-    border: 3px solid #ff0000;
-  `}
-  
 `;
 
 const Input = styled.input`
@@ -307,15 +273,6 @@ class SearchBoard extends Component {
     return (
       <ChessboardWrapper>
         <ChessboardInnerWrapper>
-          <Col>
-            <DeleteButton
-              onClick={() => this.props.toggleDeleteMode()}
-              isDeleteMode={isDeleteMode}
-            >
-              <img src={deleteSvg} alt="delete"/>
-            </DeleteButton>
-          </Col>
-
           <Chessboard
             sparePieces
             position={fen}x
@@ -391,7 +348,6 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  toggleDeleteMode: () => dispatch(toggleDeleteMode()),
   setPopupStatus: (status) => dispatch(setPopupStatus(status)),
   togglePopup: (popupStatus) => dispatch(togglePopup(popupStatus))
 });
