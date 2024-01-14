@@ -18,10 +18,11 @@ import styled from 'styled-components';
 import MatchedGames from "./MatchedGames";
 
 const ChessboardWrapper = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
+  width: 70%;
   position: relative;
+  display: flex;
+  margin: auto;
+  gap: 20px;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -88,12 +89,12 @@ const Button = styled.button`
   padding: 10px;
   cursor: pointer;
   color: rgb(255, 255, 255);
-  background-color: rgb(118, 153, 84);
-  border: 1px solid rgb(118, 153, 84);
+  background-color: #769954;
+  border: 1px solid #769954;
   border-radius: 8px;
   
   &:hover {
-    background-color: rgb(97 126 69);
+    background-color: #617e45;
   }
 `;
 
@@ -195,7 +196,7 @@ class SearchBoard extends Component {
     }
   };
 
-  DownloadingLongPollProgress = async (downloadId, startTime = new Date().getTime()) => {
+  DownloadingLongPollProgress = async (downloadId) => {
     const {showPopup} = this.props;
     const {downloadingProgress} = this.state;
     const timeoutThreshold = 90000;
@@ -206,6 +207,8 @@ class SearchBoard extends Component {
 
       const total = downloadingPollResponse.total;
       const done = downloadingPollResponse.done;
+      const lastDownloadedAt = Date.parse(downloadingPollResponse.lastDownloadedAt);
+
       const downloadingProgressCalc = total !== 0 ? (done / total) * 100 : 0;
 
       this.setState(() => ({
@@ -215,9 +218,11 @@ class SearchBoard extends Component {
       }));
 
       const currentTime = new Date().getTime();
-      const elapsedTime = currentTime - startTime;
 
-      if (elapsedTime >= timeoutThreshold) {
+      console.log(currentTime, 'currentTime')
+      const elapsedTime = currentTime - lastDownloadedAt;
+
+      if (elapsedTime >= timeoutThreshold && downloadingPollResponse.pending > 0) {
         this.setState({popupMessage: 'Search timeout'});
         this.props.setPopupStatus('failed');
       } else {
@@ -230,7 +235,7 @@ class SearchBoard extends Component {
           return;
         }
 
-        showPopup && setTimeout(() => this.DownloadingLongPollProgress(downloadId, startTime), 6000);
+        showPopup && setTimeout(() => this.DownloadingLongPollProgress(downloadId), 6000);
       }
 
     } catch (error) {
@@ -239,7 +244,7 @@ class SearchBoard extends Component {
     }
   };
 
-  SearchingLongPollProgress = async (startTime = new Date().getTime()) => {
+  SearchingLongPollProgress = async () => {
     const {inputData, fen} = this.state;
     const timeoutThreshold = 90000;
 
@@ -250,7 +255,7 @@ class SearchBoard extends Component {
       const {searchId} = await MAKE_REQUEST('faster/board', 'post', boardData);
 
       if (searchId) {
-        await this.checkSearchStatus(searchId, startTime, timeoutThreshold);
+        await this.checkSearchStatus(searchId, timeoutThreshold);
       }
     } catch (error) {
       this.props.togglePopup('failed');
@@ -258,20 +263,20 @@ class SearchBoard extends Component {
     }
   };
 
-  checkSearchStatus = async (searchId, startTime, timeoutThreshold) => {
+  checkSearchStatus = async (searchId, timeoutThreshold) => {
     try {
       const checkSearchStatusRequestData = `faster/board?searchId=${searchId}`;
-      const {total, examined, status, matched} = await MAKE_REQUEST(checkSearchStatusRequestData, 'get');
+      const {total, examined, status, matched, lastExaminedAtString} = await MAKE_REQUEST(checkSearchStatusRequestData, 'get');
 
       this.setState(() => ({
         popupMessage: '',
         searchingProgress: (examined / total) * 100
       }));
-
+      const lastDownloadedAt = Date.parse(lastExaminedAtString);
       const currentTime = new Date().getTime();
-      const elapsedTime = currentTime - startTime;
+      const elapsedTime = currentTime - lastDownloadedAt;
 
-      if (elapsedTime >= timeoutThreshold) {
+      if (elapsedTime >= timeoutThreshold && status === SEARCH_GAMES_STATUSES.inProgress) {
         this.setState({popupMessage: 'Search timeout'});
         this.props.setPopupStatus('failed');
       } else {
@@ -284,7 +289,7 @@ class SearchBoard extends Component {
           return;
         }
 
-        setTimeout(() => this.checkSearchStatus(searchId, startTime, timeoutThreshold), 6000);
+        setTimeout(() => this.checkSearchStatus(searchId, timeoutThreshold), 6000);
 
       }
     } catch (error) {
@@ -340,7 +345,7 @@ class SearchBoard extends Component {
         <Col>
           <Input
             type="text"
-            placeholder="Username"
+            placeholder="chess.com username"
             value={this.state.inputData}
             onChange={(e) => this.setState({inputData: e.target.value})}
           />
@@ -358,14 +363,14 @@ class SearchBoard extends Component {
                   {!matchedGames &&
                     <>
                       <ProgressBar
-                        progressText="Downloading games"
+                        progressText="Downloading games..."
                         hasProgressLoader={hasProgressLoader}
                         progress={Math.floor(downloadingProgress)}
                       />
                       {
                         downloadingProgress === 100 &&
                         <ProgressBar
-                          progressText="There are not matched games. Continue searching"
+                          progressText="Searching..."
                           hasProgressLoader={hasProgressLoader}
                           progress={Math.floor(searchingProgress)}
                         />
