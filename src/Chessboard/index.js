@@ -239,7 +239,7 @@ class Chessboard extends Component {
     id: '0',
     position: '',
     pieces: {},
-    width: 480,
+    width: 450,
     orientation: 'white',
     showNotation: true,
     sparePieces: false,

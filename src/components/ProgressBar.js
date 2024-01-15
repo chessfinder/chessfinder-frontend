@@ -9,7 +9,6 @@ const ProgressBarWrapper = styled.div`
 const ProgressText = styled.p`
   margin-bottom: 0;
   text-align: left;
-  font-style: italic;
 `;
 
 const LoadingAnimation = keyframes`
@@ -48,7 +47,8 @@ const ProgressLabel = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) 
+  transform: translate(-50%, -50%);
+  color: #ffffff;
 `;
 
 class ProgressBar extends Component {
@@ -59,7 +59,7 @@ class ProgressBar extends Component {
       width: ${progress}%;
       height: 100%;
       padding-inline: ${progress === 0 ? '0px' : '8px'};
-      background: linear-gradient(to right, #e5405e 0%, #ffdb3a 45%, #3fffa2 100%);
+      background-color: rgb(118, 153, 84);
       transition: width .5s linear;
       border-radius: 32px;
     `;
