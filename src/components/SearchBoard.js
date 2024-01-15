@@ -25,7 +25,9 @@ const ChessboardWrapper = styled.div`
   gap: 20px;
 
   @media (max-width: 768px) {
+    width: 100%;
     flex-direction: column;
+    align-items: center;
   }
 `;
 
@@ -35,11 +37,13 @@ const ChessboardInnerWrapper = styled.div`
 
 const Col = styled.div`
   width: 100%;
+  max-width: 180px;
   display: flex;
   flex-direction: column;
   margin-block: 85px;
 
   @media (max-width: 768px) {
+    width: unset;
     margin-block: 0 40px;
   }
 `;
@@ -66,7 +70,8 @@ const DeleteButton = styled.button`
   @media (max-width: 768px) {
     width: 48px;
     top: 14px;
-    left: 38%;
+    left: 50%;
+    margin-left: -30px;
     margin-top: unset;
     transform: translateX(-50%);
   }
