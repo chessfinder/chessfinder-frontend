@@ -94,6 +94,7 @@ class Piece extends Component {
       // if the position comes from the position prop, check if it is a different position
       this.props.sourceSquare !== nextProps.sourceSquare ||
       this.props.waitForTransition !== nextProps.waitForTransition ||
+      this.props.currentPosition !== nextProps.currentPosition ||
       // if the screen size changes then update
       this.props.width !== nextProps.width;
 
@@ -123,6 +124,7 @@ class Piece extends Component {
       getSquareCoordinates,
       piece,
       width,
+      currentPosition,
       pieces,
       transitionDuration,
       isDragging,
@@ -139,6 +141,7 @@ class Piece extends Component {
         targetSquare,
         waitForTransition,
         getSquareCoordinates,
+        currentPosition,
         piece,
         width,
         pieces,

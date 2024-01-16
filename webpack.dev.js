@@ -14,5 +14,8 @@ module.exports = merge(common, {
     libraryTarget: 'umd'
   },
   devServer: { contentBase: path.resolve(__dirname, 'dist') },
-  plugins: [new HtmlWebpackPlugin({ template: './src/index.html' })]
+  plugins: [new HtmlWebpackPlugin({
+    template: './src/index.html' ,
+    favicon: "./src/favicon.ico"
+  })]
 });
