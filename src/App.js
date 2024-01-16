@@ -24,6 +24,7 @@ const GlobalStyles = createGlobalStyle`
 
 const BoardContainer = styled.div`
   width: 100%;
+  position: relative;
   display: grid;
   align-items: flex-start;
   gap: 24px;

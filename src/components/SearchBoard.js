@@ -105,17 +105,17 @@ const Button = styled.button`
 
 class SearchBoard extends Component {
   state = {
-    fen: DEFAULT_FEN,
-    selectedSquare: null,
-    inputData: '',
-    statusId: null,
-    downloadId: null,
-    matchedGames: null,
-    popupMessage: '',
-    downloadingProgress: 0,
-    searchingProgress: 0,
-    hasProgressLoader: false
-  };
+      fen: DEFAULT_FEN,
+      selectedSquare: null,
+      inputData: '',
+      statusId: null,
+      downloadId: null,
+      matchedGames: null,
+      popupMessage: '',
+      downloadingProgress: 0,
+      searchingProgress: 0,
+      hasProgressLoader: false
+    };
 
   onDrop = ({sourceSquare, targetSquare, piece}) => {
 
@@ -129,10 +129,8 @@ class SearchBoard extends Component {
 
     newFen[targetSquare] = piece;
 
-    this.setState(() => {
-      return {
-        fen: newFen,
-      }
+    this.setState( {
+        fen: newFen
     });
   };
 
@@ -157,28 +155,21 @@ class SearchBoard extends Component {
     const {isSparePiece, sparePiece} = this.props.pieceInfo;
 
     if (isDeleteMode) {
-      const newFen = {...this.state.fen};
-      newFen[square] = squareStates.EMPTY;
-
-      this.setState(() => {
-        return {
-          fen: newFen,
-        }
-      });
-    }
-
-    if (isSparePiece) {
-      const newFen = {...this.state.fen};
-      newFen[square] = sparePiece;
-
-      this.setState(() => {
-        return {
-          fen: newFen,
-        }
-      });
-
+      this.updateSquare(square, squareStates.EMPTY);
+    } else if (isSparePiece) {
+      this.updateSquare(square, sparePiece);
     }
   }
+
+  updateSquare = (square, value) => {
+
+    const newFen = { ...this.state.fen };
+    newFen[square]=value;
+
+    this.setState({
+      fen: newFen
+    });
+  };
 
   sendRequestHandler = async () => {
     const {inputData} = this.state;
@@ -224,7 +215,6 @@ class SearchBoard extends Component {
 
       const currentTime = new Date().getTime();
 
-      console.log(currentTime, 'currentTime')
       const elapsedTime = currentTime - lastDownloadedAt;
 
       if (elapsedTime >= timeoutThreshold && downloadingPollResponse.pending > 0) {
@@ -329,7 +319,7 @@ class SearchBoard extends Component {
 
           <Chessboard
             sparePieces
-            position={fen}x
+            position={fen}
             dropOffBoard="trash"
             onDrop={this.onDrop}
             onSquareClick={this.onSquareClick}

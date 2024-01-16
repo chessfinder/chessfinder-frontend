@@ -5,7 +5,6 @@ import isEqual from 'lodash.isequal';
 import { DragDropContext } from 'react-dnd';
 import MultiBackend from 'react-dnd-multi-backend';
 import HTML5toTouch from 'react-dnd-multi-backend/lib/HTML5toTouch';
-// import deletePng from "../img/delete.png";
 
 import SparePieces from './SparePieces';
 import {
@@ -19,8 +18,6 @@ import defaultPieces from './svg/chesspieces/standard';
 import ErrorBoundary from './ErrorBoundary';
 import { DEFAULT_FEN } from "./Constants";
 import styled from "styled-components";
-import {connect} from "react-redux";
-import {toggleDeleteMode} from "../redux/actions";
 
 const ChessboardContext = React.createContext();
 
@@ -51,39 +48,6 @@ const CommonPiecesStyles = styled.div`
     top: 0;
     left: 46%;
   }
-`;
-
-const DeleteButton = styled.button`
-  width: ${props => props.width || '60px'};
-  display: flex;
-  align-items: center;
-  position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  margin-top: -100px;
-  padding: 5px;
-  cursor: pointer;
-  background-color: transparent;
-  border: 3px solid transparent;
-  border-radius: 8px;
-  
-  img {
-    width: 100%;
-  }
-  
-  @media (max-width: 768px) {
-    top: 10px;
-    left: 40%;
-    margin-top: unset;
-    transform: translate(-170%, -30%);
-  }
-
-  ${({isDeleteMode}) => isDeleteMode && `
-    color: #ffffff;
-    border: 3px solid #ff0000;
-  `}
-  
 `;
 
 class Chessboard extends Component {
@@ -302,6 +266,7 @@ class Chessboard extends Component {
   componentDidUpdate(prevProps) {
     const { position, transitionDuration, getPosition } = this.props;
 
+
     const { waitForTransition, undoMove } = this.state;
     const positionFromProps = getPositionObject(position);
     const previousPositionFromProps = getPositionObject(prevProps.position);
@@ -517,13 +482,6 @@ class Chessboard extends Component {
             {getScreenDimensions && sparePieces && <SparePieces bottom />}
             {getScreenDimensions && sparePieces &&
               <CommonPiecesStyles>
-                {/*<DeleteButton*/}
-                {/*  width={this.getWidth() / 9}*/}
-                {/*  onClick={() => this.props.toggleDeleteMode()}*/}
-                {/*  isDeleteMode={this.props.isDeleteMode}*/}
-                {/*>*/}
-                {/*  <img src={deletePng} alt="delete"/>*/}
-                {/*</DeleteButton>*/}
                 <SparePieces left />
               </CommonPiecesStyles>
             }
@@ -541,13 +499,4 @@ class Chessboard extends Component {
   }
 }
 
-// const mapStateToProps = (state) => ({
-//   isDeleteMode: state.isDeleteMode,
-// });
-//
-// const mapDispatchToProps = (dispatch) => ({
-//   toggleDeleteMode: () => dispatch(toggleDeleteMode())
-// });
-
-// export default DragDropContext(MultiBackend(HTML5toTouch))(connect(mapStateToProps, mapDispatchToProps)(Chessboard));
 export default DragDropContext(MultiBackend(HTML5toTouch))(Chessboard);

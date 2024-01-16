@@ -71,6 +71,7 @@ class Board extends Component {
                         <Piece
                           pieces={context.pieces}
                           square={square}
+                          currentPosition={context.currentPosition}
                           piece={context.currentPosition[square]}
                           width={context.width}
                           setPosition={context.setPosition}

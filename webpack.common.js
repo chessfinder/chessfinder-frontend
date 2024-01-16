@@ -21,10 +21,15 @@ module.exports = {
           { loader: 'css-loader', options: { modules: true, camelCase: true } }
         ]
       },
-
       {
-        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/,
-        use: 'file-loader'
+        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif|ico)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]',
+            outputPath: 'assets/',
+          },
+        },
       }
     ]
   },
