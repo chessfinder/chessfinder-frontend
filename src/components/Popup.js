@@ -20,10 +20,18 @@ const PopupOverlay = styled.div`
 `;
 
 const PopupStyles = styled.div`
-  min-width: 420px;
   color: #000000;
   background-color: #ffffff;
   border-radius: 8px;
+
+  @media(min-width: 768px) {
+    min-width: 440px;
+  }
+
+  @media(max-width: 768px) {
+    width: 90%;
+    margin: 24px;
+  }
 `;
 
 const PopupBody = styled.div`

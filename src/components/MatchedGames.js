@@ -6,6 +6,11 @@ const MatchedGameListWrapper = styled.div`
   overflow-y: auto;
   padding-inline: 16px;
   margin-bottom: 16px;
+
+  @media(max-width: 768px) {
+    height: auto;
+    max-height: 420px;
+  }
 `;
 
 const MatchedGameList = styled.ol`
@@ -28,15 +33,15 @@ const MatchedGameListItem = styled.li`
 
   &::before {
     content: counters(custom, ".") " ";
-    width: 25px;
-    height: 25px;
+    width: 35px;
+    height: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
     left: -10px;
     color: #ffffff;
-    background-color: #b58863;
+    background-color: #769954;
     border-radius: 50%;
     border: 5px solid #e2e2e2;
     transform: scale(1);
@@ -56,6 +61,9 @@ const MatchedGameListItem = styled.li`
 const MatchedGameLink = styled.a`
   padding-left: 30px;
   text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: #4c4a4a;
 `;
 
