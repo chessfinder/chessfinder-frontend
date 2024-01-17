@@ -29,7 +29,7 @@ const PopupStyles = styled.div`
   }
 
   @media(max-width: 768px) {
-    width: 100%;
+    width: 90%;
     margin: 24px;
   }
 `;

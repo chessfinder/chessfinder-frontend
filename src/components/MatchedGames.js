@@ -6,6 +6,11 @@ const MatchedGameListWrapper = styled.div`
   overflow-y: auto;
   padding-inline: 16px;
   margin-bottom: 16px;
+
+  @media(max-width: 768px) {
+    height: auto;
+    max-height: 420px;
+  }
 `;
 
 const MatchedGameList = styled.ol`
