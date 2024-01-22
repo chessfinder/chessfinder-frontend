@@ -276,13 +276,18 @@ class SearchBoard extends Component {
         this.props.setPopupStatus('failed');
       } else {
         if (status === SEARCH_GAMES_STATUSES.searchedPartially || status === SEARCH_GAMES_STATUSES.searchedAll) {
-          this.props.setPopupStatus('success');
-          this.setState({
-            matchedGames: matched
-          });
+          if(matched === null) {
+            this.setState({popupMessage: 'There is no matched games'});
+          } else {
+            this.props.setPopupStatus('success');
+            this.setState({
+              matchedGames: matched
+            });
+          }
 
           return;
         }
+
 
         setTimeout(() => this.checkSearchStatus(searchId, timeoutThreshold), 6000);
 
