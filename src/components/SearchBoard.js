@@ -16,6 +16,7 @@ import ProgressBar from "./ProgressBar";
 import deletePng from "../img/delete.png";
 import styled from 'styled-components';
 import MatchedGames from "./MatchedGames";
+import BuyMeACoffee from "./BuyMeACoffee";
 
 const ChessboardWrapper = styled.div`
   width: 70%;
@@ -91,6 +92,7 @@ const Input = styled.input`
 `;
 
 const Button = styled.button`
+  height: 40px;
   padding: 10px;
   cursor: pointer;
   color: rgb(255, 255, 255);
@@ -352,6 +354,8 @@ class SearchBoard extends Component {
           <Button onClick={this.sendRequestHandler}>
             Send Request
           </Button>
+
+          <BuyMeACoffee />
         </Col>
 
         {showPopup &&

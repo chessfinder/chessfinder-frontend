@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
 import GithubLink from "./components/GithubLink";
 import LeftSide from "./components/LeftSide";
-import BuyMeACoffee from "./components/BuyMeACoffee";
 
 const GlobalStyles = createGlobalStyle`
   @import url("https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap");
@@ -29,6 +28,7 @@ const BoardContainer = styled.div`
   align-items: flex-start;
   gap: 24px;
   padding: 24px;
+  overflow-x: hidden;
   
   @media(min-width: 1140px) {
     grid-template-columns: 1fr 3fr;
@@ -58,7 +58,6 @@ class App extends Component {
         <LeftSide />
         <SearchBoard/>
         <GithubLink />
-        <BuyMeACoffee />
       </BoardContainer>
     );
   }
