@@ -3,19 +3,14 @@ import styled  from 'styled-components';
 import buyMeACoffeePng from "../img/bmc-button.png";
 
 const BuyMeACoffeeButton = styled.a`
-  width: 150px;
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
+  height: 40px;
+  margin-top: 10px;
   
   img {
     width: 100%;
-    object-fit: contain;
-  }
-  
-  @media (max-width: 768px) {
-    position: relative;
-    margin-left: auto;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
   }
 `;
 

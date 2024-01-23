@@ -204,6 +204,7 @@ class Chessboard extends Component {
     position: '',
     pieces: {},
     width: 450,
+    widthMobile: 320,
     orientation: 'white',
     showNotation: true,
     sparePieces: false,
@@ -265,7 +266,6 @@ class Chessboard extends Component {
 
   componentDidUpdate(prevProps) {
     const { position, transitionDuration, getPosition } = this.props;
-
 
     const { waitForTransition, undoMove } = this.state;
     const positionFromProps = getPositionObject(position);
@@ -424,12 +424,10 @@ class Chessboard extends Component {
   setTouchState = e => this.setState({ wasPieceTouched: e.isTrusted });
 
   getWidth = () => {
-    const { calcWidth, width } = this.props;
-    const { screenWidth, screenHeight } = this.state;
+    const { widthMobile, width } = this.props;
+    const { screenWidth } = this.state;
 
-    const responsiveWidth = calcWidth({ screenWidth, screenHeight });
-
-    return screenWidth <= 768 ? '320' : responsiveWidth || width;
+    return screenWidth <= 768 ? widthMobile : width;
   };
 
   render() {
@@ -460,6 +458,7 @@ class Chessboard extends Component {
             dropOffBoard: dropOffBoard.toLowerCase(),
             ...{
               width: this.getWidth(),
+              widthMobile: this.getWidth(),
               sourceSquare,
               targetSquare,
               sourcePiece,
@@ -488,6 +487,7 @@ class Chessboard extends Component {
           </ChessboardInner>
           <CustomDragLayer
             width={this.getWidth()}
+            widthMobile={this.getWidth()}
             pieces={pieces}
             id={id}
             wasPieceTouched={wasPieceTouched}
