@@ -84,6 +84,11 @@ const DeleteButton = styled.button`
   
 `;
 
+const PopupMessageFailed = styled.h2`
+  margin-top:0;
+  color: #bf1A2f
+`;
+
 const Input = styled.input`
   margin-bottom: 10px;
   padding: 10px;
@@ -183,14 +188,15 @@ class SearchBoard extends Component {
       this.setState({downloadId});
 
       if (downloadId) {
-        this.props.togglePopup('warning');
+        this.props.togglePopup();
 
         await this.DownloadingLongPollProgress(downloadId);
       }
 
     } catch (error) {
-      this.props.togglePopup('failed');
-      this.setState({popupMessage: error.data.msg});
+      this.props.togglePopup();
+      console.log(error.data)
+      this.setState({popupMessage: error.data.message});
     }
   };
 
@@ -236,8 +242,8 @@ class SearchBoard extends Component {
       }
 
     } catch (error) {
-      this.props.togglePopup('failed');
-      this.setState({popupMessage: error.data.msg});
+      this.props.togglePopup();
+      this.setState({popupMessage: error.data.message});
     }
   };
 
@@ -255,8 +261,8 @@ class SearchBoard extends Component {
         await this.checkSearchStatus(searchId, timeoutThreshold);
       }
     } catch (error) {
-      this.props.togglePopup('failed');
-      this.setState({popupMessage: error.data.msg});
+      this.props.togglePopup();
+      this.setState({popupMessage: error.data.message});
     }
   };
 
@@ -295,8 +301,8 @@ class SearchBoard extends Component {
 
       }
     } catch (error) {
-      this.props.togglePopup('failed');
-      this.setState({popupMessage: error.data.msg});
+      this.props.togglePopup();
+      this.setState({popupMessage: error.data.message});
     }
   };
 
@@ -352,7 +358,7 @@ class SearchBoard extends Component {
             onChange={(e) => this.setState({inputData: e.target.value})}
           />
           <Button onClick={this.sendRequestHandler}>
-            Send Request
+            Search
           </Button>
 
           <BuyMeACoffee />
@@ -361,7 +367,7 @@ class SearchBoard extends Component {
         {showPopup &&
           <>
             <Popup>
-              {popupMessage ? <h2>{popupMessage}</h2>
+              {popupMessage ? <PopupMessageFailed>{popupMessage}</PopupMessageFailed>
                 :
                 <>
                   {!matchedGames &&

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { togglePopup } from "../redux/actions";
 import { Close } from "./svgIcons/Close";
-import { POPUP_STATUSES } from "../Chessboard/Constants";
 import styled from 'styled-components';
 
 const PopupOverlay = styled.div`
@@ -35,7 +34,7 @@ const PopupStyles = styled.div`
 `;
 
 const PopupBody = styled.div`
-  padding: 16px;
+  padding: 8px 16px;
   text-align: center;
 `;
 
@@ -64,13 +63,13 @@ class Popup extends Component {
   }
 
   render() {
-    const { showPopup, popupStatus } = this.props;
+    const { showPopup } = this.props;
 
     return (
       showPopup && (
         <PopupOverlay>
           <PopupStyles>
-            <PopupHeader backgroundcolor={getStatusColor(popupStatus)}>
+            <PopupHeader>
               <PopupCloseBtn onClick={() => this.props.togglePopup()}>
                 <Close />
               </PopupCloseBtn>
@@ -95,16 +94,3 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Popup);
-
-const getStatusColor = (status) => {
-  switch (status) {
-    case 'failed':
-      return POPUP_STATUSES.failed;
-    case 'warning':
-      return POPUP_STATUSES.warning;
-    case 'success':
-      return POPUP_STATUSES.success;
-    default:
-      return '';
-  }
-};
