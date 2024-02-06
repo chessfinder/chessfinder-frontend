@@ -128,6 +128,7 @@ class SearchBoard extends Component {
       searchingProgress: 0,
       downloadProgressLoader: true,
       searchProgressLoader: true,
+      searchGamesStatus: ''
     };
 
   onDrop = ({sourceSquare, targetSquare, piece}) => {
@@ -187,9 +188,9 @@ class SearchBoard extends Component {
     const {inputData} = this.state;
 
     try {
-      if (!inputData.trim()) {
-        return;
-      }
+      if (!inputData.trim()) return;
+
+      this.setState({ matchedGames: null });
 
       const downLoadGamesRequestData = {username: inputData, CHESSBOARD_PLATFORM};
       const {downloadId} = await MAKE_REQUEST('faster/game', 'post', downLoadGamesRequestData);
@@ -198,7 +199,6 @@ class SearchBoard extends Component {
 
       if (downloadId) {
         this.props.togglePopup();
-
         await this.DownloadingLongPollProgress(downloadId);
       }
 
@@ -210,18 +210,15 @@ class SearchBoard extends Component {
 
   DownloadingLongPollProgress = async (downloadId) => {
     const {showPopup} = this.props;
-    const {downloadingProgress} = this.state;
-    const timeoutThreshold = 90000;
+    const timeoutThreshold = 60000;
 
     try {
       if (!showPopup) return;
 
       const downloadGamesRequestData = `faster/game?downloadId=${downloadId}`;
-      const downloadingPollResponse = await MAKE_REQUEST(downloadGamesRequestData, 'get');
+      const {total, done, lastDownloadedAt, pending} = await MAKE_REQUEST(downloadGamesRequestData, 'get');
 
-      const total = downloadingPollResponse.total;
-      const done = downloadingPollResponse.done;
-      const lastDownloadedAt = Date.parse(downloadingPollResponse.lastDownloadedAt);
+      const lastDownloadedAtParsed = Date.parse(lastDownloadedAt);
 
       const downloadingProgressCalc = total !== 0 ? (done / total) * 100 : 0;
 
@@ -230,17 +227,15 @@ class SearchBoard extends Component {
         downloadingProgress: downloadingProgressCalc,
       }));
 
-      console.log('downloadingProgress', downloadingProgress)
-
-      if(downloadingProgress === 100) this.setState({downloadProgressLoader: false})
+      if(downloadingProgressCalc === 100) this.setState({downloadProgressLoader: false})
 
       const currentTime = new Date().getTime();
-      const elapsedTime = currentTime - lastDownloadedAt;
+      const elapsedTime = currentTime - lastDownloadedAtParsed;
 
-      if (elapsedTime >= timeoutThreshold && downloadingPollResponse.pending > 0) {
+      if (elapsedTime >= timeoutThreshold && pending > 0) {
         this.setState({popupMessage: 'Search timeout'});
       } else {
-        if (downloadingProgress === 100) {
+        if (downloadingProgressCalc === 100) {
           await this.SearchingLongPollProgress();
           return;
         }
@@ -256,7 +251,7 @@ class SearchBoard extends Component {
 
   SearchingLongPollProgress = async () => {
     const {inputData, fen} = this.state;
-    const timeoutThreshold = 90000;
+    const timeoutThreshold = 60000;
 
     try {
       const { showPopup } = this.props;
@@ -278,16 +273,18 @@ class SearchBoard extends Component {
 
   checkSearchStatus = async (searchId, timeoutThreshold) => {
     try {
-      const {searchingProgress} = this.state;
       const checkSearchStatusRequestData = `faster/board?searchId=${searchId}`;
       const {total, examined, status, matched, lastExaminedAtString} = await MAKE_REQUEST(checkSearchStatusRequestData, 'get');
 
+      const searchProgressCalc = (examined / total) * 100;
+
       this.setState(() => ({
         popupMessage: '',
-        searchingProgress: (examined / total) * 100
+        searchingProgress: searchProgressCalc,
+        searchGamesStatus: status
       }));
 
-      if(searchingProgress === 100) this.setState({searchProgressLoader: false})
+      if(searchProgressCalc === 100) this.setState({searchProgressLoader: false})
 
       const lastDownloadedAt = Date.parse(lastExaminedAtString);
       const currentTime = new Date().getTime();
@@ -301,16 +298,13 @@ class SearchBoard extends Component {
             this.setState({popupMessage: 'There is no matched games'});
           } else {
             this.setState({
-              matchedGames: matched
+              matchedGames: matched,
             });
           }
-
           return;
         }
 
-
         setTimeout(() => this.checkSearchStatus(searchId, timeoutThreshold), 6000);
-
       }
     } catch (error) {
       this.props.togglePopup();
@@ -328,7 +322,8 @@ class SearchBoard extends Component {
       searchingProgress,
       downloadProgressLoader,
       searchProgressLoader,
-      matchedGames
+      matchedGames,
+      searchGamesStatus
     } = this.state;
 
     return (
@@ -401,7 +396,14 @@ class SearchBoard extends Component {
                     </>
                   }
 
-                  {matchedGames && <MatchedGames matchedGames={matchedGames}/>}
+                  {matchedGames &&
+                    <>
+                      {searchGamesStatus === SEARCH_GAMES_STATUSES.searchedPartially &&
+                        <h4>Search Partially Lorem ipsum dollar amit...</h4>
+                      }
+                      <MatchedGames matchedGames={matchedGames}/>
+                    </>
+                  }
                 </>
               }
             </Popup>
