@@ -1,6 +1,6 @@
 import React, {Component} from 'react'; // eslint-disable-line no-unused-vars
 import {connect} from "react-redux";
-import {setPopupStatus, toggleDeleteMode, togglePopup} from "../redux/actions";
+import {toggleDeleteMode, togglePopup} from "../redux/actions";
 import Chessboard from '../Chessboard';
 import {
   CHESSBOARD_PLATFORM,
@@ -105,8 +105,13 @@ const Button = styled.button`
   border: 1px solid #769954;
   border-radius: 8px;
   
-  &:hover {
+  &:not[disabled]:hover {
     background-color: #617e45;
+  }
+  
+  &[disabled] {
+    opacity: .5;
+    cursor: not-allowed;
   }
 `;
 
@@ -121,7 +126,8 @@ class SearchBoard extends Component {
       popupMessage: '',
       downloadingProgress: 0,
       searchingProgress: 0,
-      hasProgressLoader: false
+      downloadProgressLoader: true,
+      searchProgressLoader: true,
     };
 
   onDrop = ({sourceSquare, targetSquare, piece}) => {
@@ -169,7 +175,6 @@ class SearchBoard extends Component {
   }
 
   updateSquare = (square, value) => {
-
     const newFen = { ...this.state.fen };
     newFen[square]=value;
 
@@ -182,6 +187,10 @@ class SearchBoard extends Component {
     const {inputData} = this.state;
 
     try {
+      if (!inputData.trim()) {
+        return;
+      }
+
       const downLoadGamesRequestData = {username: inputData, CHESSBOARD_PLATFORM};
       const {downloadId} = await MAKE_REQUEST('faster/game', 'post', downLoadGamesRequestData);
 
@@ -195,7 +204,6 @@ class SearchBoard extends Component {
 
     } catch (error) {
       this.props.togglePopup();
-      console.log(error.data)
       this.setState({popupMessage: error.data.message});
     }
   };
@@ -206,6 +214,8 @@ class SearchBoard extends Component {
     const timeoutThreshold = 90000;
 
     try {
+      if (!showPopup) return;
+
       const downloadGamesRequestData = `faster/game?downloadId=${downloadId}`;
       const downloadingPollResponse = await MAKE_REQUEST(downloadGamesRequestData, 'get');
 
@@ -218,23 +228,20 @@ class SearchBoard extends Component {
       this.setState(() => ({
         popupMessage: '',
         downloadingProgress: downloadingProgressCalc,
-        hasProgressLoader: true
       }));
 
-      const currentTime = new Date().getTime();
+      console.log('downloadingProgress', downloadingProgress)
 
+      if(downloadingProgress === 100) this.setState({downloadProgressLoader: false})
+
+      const currentTime = new Date().getTime();
       const elapsedTime = currentTime - lastDownloadedAt;
 
       if (elapsedTime >= timeoutThreshold && downloadingPollResponse.pending > 0) {
         this.setState({popupMessage: 'Search timeout'});
-        this.props.setPopupStatus('failed');
       } else {
         if (downloadingProgress === 100) {
-          this.props.setPopupStatus('success');
-          this.setState({hasProgressLoader: false});
-
           await this.SearchingLongPollProgress();
-
           return;
         }
 
@@ -252,8 +259,11 @@ class SearchBoard extends Component {
     const timeoutThreshold = 90000;
 
     try {
+      const { showPopup } = this.props;
       const newObjToFen = objToFen(fen);
       const boardData = {username: inputData, platform: CHESSBOARD_PLATFORM, board: newObjToFen};
+
+      if (!showPopup) return;
 
       const {searchId} = await MAKE_REQUEST('faster/board', 'post', boardData);
 
@@ -268,6 +278,7 @@ class SearchBoard extends Component {
 
   checkSearchStatus = async (searchId, timeoutThreshold) => {
     try {
+      const {searchingProgress} = this.state;
       const checkSearchStatusRequestData = `faster/board?searchId=${searchId}`;
       const {total, examined, status, matched, lastExaminedAtString} = await MAKE_REQUEST(checkSearchStatusRequestData, 'get');
 
@@ -275,19 +286,20 @@ class SearchBoard extends Component {
         popupMessage: '',
         searchingProgress: (examined / total) * 100
       }));
+
+      if(searchingProgress === 100) this.setState({searchProgressLoader: false})
+
       const lastDownloadedAt = Date.parse(lastExaminedAtString);
       const currentTime = new Date().getTime();
       const elapsedTime = currentTime - lastDownloadedAt;
 
       if (elapsedTime >= timeoutThreshold && status === SEARCH_GAMES_STATUSES.inProgress) {
         this.setState({popupMessage: 'Search timeout'});
-        this.props.setPopupStatus('failed');
       } else {
         if (status === SEARCH_GAMES_STATUSES.searchedPartially || status === SEARCH_GAMES_STATUSES.searchedAll) {
           if(matched === null) {
             this.setState({popupMessage: 'There is no matched games'});
           } else {
-            this.props.setPopupStatus('success');
             this.setState({
               matchedGames: matched
             });
@@ -314,7 +326,8 @@ class SearchBoard extends Component {
       popupMessage,
       downloadingProgress,
       searchingProgress,
-      hasProgressLoader,
+      downloadProgressLoader,
+      searchProgressLoader,
       matchedGames
     } = this.state;
 
@@ -357,7 +370,7 @@ class SearchBoard extends Component {
             value={this.state.inputData}
             onChange={(e) => this.setState({inputData: e.target.value})}
           />
-          <Button onClick={this.sendRequestHandler}>
+          <Button onClick={this.sendRequestHandler} disabled={!this.state.inputData.trim()}>
             Search
           </Button>
 
@@ -374,14 +387,14 @@ class SearchBoard extends Component {
                     <>
                       <ProgressBar
                         progressText="Downloading games..."
-                        hasProgressLoader={hasProgressLoader}
+                        downloadProgressLoader={downloadProgressLoader}
                         progress={Math.floor(downloadingProgress)}
                       />
                       {
                         downloadingProgress === 100 &&
                         <ProgressBar
                           progressText="Searching..."
-                          hasProgressLoader={hasProgressLoader}
+                          searchProgressLoader={searchProgressLoader}
                           progress={Math.floor(searchingProgress)}
                         />
                       }
@@ -408,7 +421,6 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   toggleDeleteMode: () => dispatch(toggleDeleteMode()),
-  setPopupStatus: (status) => dispatch(setPopupStatus(status)),
   togglePopup: (popupStatus) => dispatch(togglePopup(popupStatus))
 });
 

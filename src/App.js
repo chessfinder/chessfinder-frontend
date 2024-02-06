@@ -31,7 +31,7 @@ const BoardContainer = styled.div`
   overflow-x: hidden;
   
   @media(min-width: 1140px) {
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: 1.1fr 2.9fr;
   }
   
   @media(max-width: 768px) {
