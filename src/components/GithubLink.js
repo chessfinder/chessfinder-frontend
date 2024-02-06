@@ -38,7 +38,7 @@ class GithubLink extends Component {
   render() {
     return (
       <Ribbon className="ribbon">
-        <a href="https://github.com/chessfinder/chessboardjsx">Fork me on GitHub</a>
+        <a href="https://github.com/chessfinder">Fork me on GitHub</a>
       </Ribbon>
     );
   }

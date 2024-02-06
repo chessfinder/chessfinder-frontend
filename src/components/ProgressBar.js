@@ -53,7 +53,7 @@ const ProgressLabel = styled.div`
 
 class ProgressBar extends Component {
   render() {
-    const { progressText, progress, hasProgressLoader } = this.props;
+    const { progressText, progress, downloadProgressLoader, searchProgressLoader } = this.props;
 
     const ProgressInner = styled.div`
       width: ${progress}%;
@@ -68,7 +68,7 @@ class ProgressBar extends Component {
       <div>
         <ProgressText>{progressText}</ProgressText>
         <ProgressBarWrapper>
-          <Progress className={hasProgressLoader ? 'progress-loading' : ''}>
+          <Progress className={downloadProgressLoader || searchProgressLoader ? 'progress-loading' : ''}>
             <ProgressInner />
           </Progress>
           <ProgressLabel>{progress}%</ProgressLabel>

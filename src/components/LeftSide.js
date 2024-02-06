@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import styled  from 'styled-components';
+import React, {Component} from 'react';
+import styled from 'styled-components';
 import logo from "../img/logo.png";
 import deletePng from "../img/delete.png";
 import unknownPng from "../img/unknown.png";
@@ -8,9 +8,9 @@ import occupiedPng from "../img/occupied.png";
 const LogoImage = styled.img`
   width: 160px;
   height: auto;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 
-  @media(max-width: 576px) {
+  @media (max-width: 576px) {
     margin-bottom: 0;
   }
 `;
@@ -32,27 +32,35 @@ const ListImage = styled.img`
 class LeftSide extends Component {
   render() {
     return (
-        <aside>
-            <LogoImage src={logo} alt="logo" />
+      <aside>
+        <LogoImage src={logo} alt="logo"/>
 
-            <AsideP>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            </AsideP>
-            <List>
-                <li>
-                    <ListImage src={deletePng} alt="delete"/>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </li>
-                <li>
-                    <ListImage src={unknownPng} alt="unknown"/>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </li>
-                <li>
-                    <ListImage src={occupiedPng} alt="occupied"/>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </li>
-            </List>
-        </aside>
+        <AsideP>
+          Discover and revisit your most memorable chess games with ease. Whether you're looking for that brilliant
+          smothered mate, the nail-biting game where you stalemated your opponent despite being up three queens, or any
+          other unique positions you've encountered, chessfinder.org is here to help.
+          chessfinder.org allows you to search for games on chess.com even with partial information about the board
+          position. This functionality, not available on chess.com, lets you find those unforgettable games without the
+          need for precise or complete details. </AsideP>
+        <List>
+          <li>
+            <ListImage src={deletePng} alt="delete"/>
+            Mark as Uncertain: Use this when you're unsure whether a square is occupied or empty.
+          </li>
+          <li>
+            <ListImage src={unknownPng} alt="unknown"/>
+            Mark as Occupied: Use this to indicate the square is occupied by a piece, but its type and color are
+            unknown.
+          </li>
+          <li>
+            <ListImage src={occupiedPng} alt="occupied"/>
+            Mark as Empty: Use this to confirm that a square is definitely empty
+          </li>
+        </List>
+        <p>
+          <strong>NO MEMORABLE GAME IS EVER FORGOTTEN!</strong>
+        </p>
+      </aside>
     );
   }
 }

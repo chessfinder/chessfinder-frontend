@@ -85,12 +85,11 @@ class Popup extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  showPopup: state.showPopup,
-  popupStatus: state.popupStatus
+  showPopup: state.showPopup
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  togglePopup: (popupStatus) => dispatch(togglePopup(popupStatus))
+  togglePopup: () => dispatch(togglePopup())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Popup);
