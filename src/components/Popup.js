@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import { togglePopup } from "../redux/actions";
 import { Close } from "./svgIcons/Close";
 import styled from 'styled-components';
 
@@ -63,14 +62,14 @@ class Popup extends Component {
   }
 
   render() {
-    const { showPopup } = this.props;
+    const { showPopup, onClose } = this.props;
 
     return (
       showPopup && (
         <PopupOverlay>
           <PopupStyles>
             <PopupHeader>
-              <PopupCloseBtn onClick={() => this.props.togglePopup()}>
+              <PopupCloseBtn onClick={onClose}>
                 <Close />
               </PopupCloseBtn>
             </PopupHeader>
@@ -88,8 +87,4 @@ const mapStateToProps = (state) => ({
   showPopup: state.showPopup
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  togglePopup: () => dispatch(togglePopup())
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Popup);
+export default connect(mapStateToProps, null)(Popup);
