@@ -18,7 +18,8 @@ import styled from 'styled-components';
 import MatchedGames from "./MatchedGames";
 import BuyMeACoffee from "./BuyMeACoffee";
 
-const baseApiUrl = 'https://api-qa.chessfinder.org/api';
+const baseApiUrl = process.env.REACT_APP_BASE_API_URL;
+
 
 const ChessboardWrapper = styled.div`
   width: 70%;

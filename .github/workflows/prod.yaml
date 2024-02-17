@@ -34,3 +34,5 @@ jobs:
       run: |
         amplify init --amplify "$(cat .github/workflows/prod-config/app.json)" --frontend "$(cat .github/workflows/prod-config/frontend.json)" --yes
         amplify publish --yes
+      env:
+        REACT_APP_BASE_API_URL: ${{ secrets.CHESSFINDER_API_URL }}
