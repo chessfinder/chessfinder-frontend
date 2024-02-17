@@ -1,8 +1,12 @@
+require('dotenv').config();
+
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
+
 module.exports = merge(common, {
   mode: 'development',
   devtool: 'inline-source-map',
@@ -14,8 +18,15 @@ module.exports = merge(common, {
     libraryTarget: 'umd'
   },
   devServer: { contentBase: path.resolve(__dirname, 'dist') },
-  plugins: [new HtmlWebpackPlugin({
-    template: './src/index.html' ,
-    favicon: "./src/favicon.ico"
-  })]
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/index.html' ,
+      favicon: "./src/favicon.ico"
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        'REACT_APP_BASE_API_URL': JSON.stringify(process.env.REACT_APP_BASE_API_URL),
+      }
+    })
+  ]
 });
