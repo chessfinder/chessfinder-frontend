@@ -17,7 +17,7 @@ const BuyMeACoffeeButton = styled.a`
 class BuyMeACoffee extends Component {
   render() {
     return (
-        <BuyMeACoffeeButton href="https://github.com/chessfinder/chessboardjsx" target="_blank" rel="noopener noreferrer">
+        <BuyMeACoffeeButton href="https://www.buymeacoffee.com/chessfinder" target="_blank" rel="noopener noreferrer">
             <img src={buyMeACoffeePng} alt="github"/>
         </BuyMeACoffeeButton>
     );

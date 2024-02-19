@@ -322,7 +322,7 @@ class SearchBoard extends Component {
       } else {
         if (status === SEARCH_GAMES_STATUSES.searchedPartially || status === SEARCH_GAMES_STATUSES.searchedAll) {
           if (matched === null) {
-            this.setState({popupMessage: 'There is no matched games'});
+            this.setState({popupMessage: 'There are no matched games'});
           } else {
             this.setState({
               matchedGames: matched,
@@ -450,7 +450,7 @@ class SearchBoard extends Component {
                   {matchedGames &&
                     <>
                       {searchGamesStatus === SEARCH_GAMES_STATUSES.searchedPartially &&
-                        <h4>Search Partially Lorem ipsum dollar amit...</h4>
+                        <h4>More games may exist. Be more specific in your search.</h4>
                       }
                       <MatchedGames matchedGames={matchedGames}/>
                     </>
