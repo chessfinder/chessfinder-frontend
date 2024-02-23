@@ -6,7 +6,7 @@ import unknownPng from "../img/unknown.png";
 import occupiedPng from "../img/occupied.png";
 
 const LogoImage = styled.img`
-  width: 160px;
+  width: 290px;
   height: auto;
   margin-bottom: 20px;
 
@@ -45,16 +45,16 @@ class LeftSide extends Component {
         <List>
           <li>
             <ListImage src={deletePng} alt="delete"/>
-            Mark as Uncertain: Use this when you're unsure whether a square is occupied or empty.
+            Mark as Empty: Use this to confirm that a square is definitely empty.
           </li>
           <li>
             <ListImage src={unknownPng} alt="unknown"/>
-            Mark as Occupied: Use this to indicate the square is occupied by a piece, but its type and color are
-            unknown.
+            Mark as Uncertain: Use this when you're unsure whether a square is occupied or empty.
           </li>
           <li>
             <ListImage src={occupiedPng} alt="occupied"/>
-            Mark as Empty: Use this to confirm that a square is definitely empty
+            Mark as Occupied: Use this to indicate the square is occupied by a piece, but its type and color are
+            unknown.
           </li>
         </List>
         <p>
