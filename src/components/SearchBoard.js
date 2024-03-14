@@ -270,14 +270,12 @@ class SearchBoard extends Component {
   SearchingLongPollProgress = async () => {
     const {inputData, fen} = this.state;
     const timeoutThreshold = 60000;
-
     try {
       const {showPopup} = this.props;
       if (!showPopup) return;
       
       const newObjToFen = objToFen(fen);
       const boardData = {username: inputData, platform: CHESSBOARD_PLATFORM, board: newObjToFen};
-
 
       const {searchId} = await this.makeRequest('faster/board', 'post', boardData);
 
