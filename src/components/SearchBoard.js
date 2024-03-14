@@ -232,7 +232,7 @@ class SearchBoard extends Component {
 
       const downloadGamesRequestData = `faster/game?downloadId=${downloadId}`;
       const {total, done, lastDownloadedAt, pending} = await this.makeRequest(downloadGamesRequestData, 'get');
-
+      
       const lastDownloadedAtParsed = Date.parse(lastDownloadedAt);
 
       const downloadingProgressCalc = total !== 0 ? (done / total) * 100 : 0;
@@ -273,10 +273,11 @@ class SearchBoard extends Component {
 
     try {
       const {showPopup} = this.props;
+      if (!showPopup) return;
+      
       const newObjToFen = objToFen(fen);
       const boardData = {username: inputData, platform: CHESSBOARD_PLATFORM, board: newObjToFen};
 
-      if (!showPopup) return;
 
       const {searchId} = await this.makeRequest('faster/board', 'post', boardData);
 
@@ -294,6 +295,9 @@ class SearchBoard extends Component {
 
   checkSearchStatus = async (searchId, timeoutThreshold) => {
     try {
+      const { showPopup } = this.props;
+      if (!showPopup) return;
+
       const checkSearchStatusRequestData = `faster/board?searchId=${searchId}`;
       const {
         total,

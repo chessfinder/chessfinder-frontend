@@ -11,7 +11,7 @@ const initialState = {
 
 export default function rootReducer(state = initialState, action) {
   switch (action.type) {
-    case 'SET_PIECE_INFO':
+    case 'SET_PIECE_INFO':{
       const newSparePiece = action.data;
       const toggleSparePiece = newSparePiece === state.pieceInfo.sparePiece ? !state.pieceInfo.isToggleSparePiece : false
 
@@ -23,6 +23,7 @@ export default function rootReducer(state = initialState, action) {
           sparePiece: action.data
         }
       };
+    }
     case 'TOGGLE_DELETE_MODE':
       return {
         ...state,
