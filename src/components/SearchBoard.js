@@ -20,7 +20,6 @@ import BuyMeACoffee from "./BuyMeACoffee";
 
 const baseApiUrl = process.env.REACT_APP_BASE_API_URL;
 
-
 const ChessboardWrapper = styled.div`
   width: 70%;
   position: relative;
@@ -79,12 +78,18 @@ const DeleteButton = styled.button`
     margin-top: unset;
     transform: translateX(-50%);
   }
+  
+  &[isdeletemode="true"] {
+    color: #ffffff;
+    border: 3px solid #ff0000;
+  }
 
-  ${({isDeleteMode}) => isDeleteMode && `
+  ${props => {props.isdeletemode && `
     color: #ffffff;
     border: 3px solid #ff0000;
   `}
-
+  }
+  }
 `;
 
 const PopupMessageFailed = styled.h2`
@@ -119,22 +124,26 @@ const Button = styled.button`
 `;
 
 class SearchBoard extends Component {
-  state = {
-    fen: DEFAULT_FEN,
-    selectedSquare: null,
-    inputData: '',
-    statusId: null,
-    downloadId: null,
-    matchedGames: null,
-    popupMessage: '',
-    downloadingProgress: 0,
-    searchingProgress: 0,
-    downloadProgressLoader: true,
-    searchProgressLoader: true,
-    searchGamesStatus: ''
-  };
 
-  source = null;
+  constructor(props) {
+    super(props);
+    this.state = {
+      fen: DEFAULT_FEN,
+      selectedSquare: null,
+      inputData: '',
+      statusId: null,
+      downloadId: null,
+      matchedGames: null,
+      popupMessage: '',
+      downloadingProgress: 0,
+      searchingProgress: 0,
+      downloadProgressLoader: true,
+      searchProgressLoader: true,
+      searchGamesStatus: '',
+    }
+
+    this.abortControllerInstance = null;
+  }
 
   onDrop = ({sourceSquare, targetSquare, piece}) => {
 
@@ -191,21 +200,35 @@ class SearchBoard extends Component {
 
   handlePopupClose = () => {
     this.props.togglePopup();
-    if (this.source) {
-      this.source.cancel('Request canceled');
+    this.setState({popupMessage: ""});
+
+    if(this.abortControllerInstance){
+      this.abortControllerInstance.abort();
     }
+
   };
+
+  resetOrStartAbortController = () => {
+      if(this.abortControllerInstance){
+         this.abortControllerInstance=null;
+      }
+      this.abortControllerInstance = new AbortController();
+  }
 
   sendRequestHandler = async () => {
     const {inputData} = this.state;
+
+    this.resetOrStartAbortController();
+    const { signal } = this.abortControllerInstance;
 
     try {
       if (!inputData.trim()) return;
 
       this.setState({matchedGames: null});
 
-      const downLoadGamesRequestData = {username: inputData, CHESSBOARD_PLATFORM};
-      const {downloadId} = await this.makeRequest('faster/game', 'post', downLoadGamesRequestData);
+      const downLoadGamesRequestData = {username: inputData, platform: CHESSBOARD_PLATFORM};
+      const getDownloadId = await axios.post(`${baseApiUrl}/faster/game`, downLoadGamesRequestData, {signal});
+      const {downloadId} = getDownloadId.data;
 
       this.setState({downloadId});
 
@@ -215,11 +238,8 @@ class SearchBoard extends Component {
       }
 
     } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log('Request canceled', error.message);
-      } else {
-        console.log(error, 'error - sendRequestHandler')
-      }
+      this.props.togglePopup();
+      this.setState({popupMessage: error.response.data.message});
     }
   };
 
@@ -227,11 +247,15 @@ class SearchBoard extends Component {
     const {showPopup} = this.props;
     const timeoutThreshold = 60000;
 
+    this.resetOrStartAbortController();
+    const { signal } = this.abortControllerInstance;
+
     try {
       if (!showPopup) return;
 
-      const downloadGamesRequestData = `faster/game?downloadId=${downloadId}`;
-      const {total, done, lastDownloadedAt, pending} = await this.makeRequest(downloadGamesRequestData, 'get');
+      const downloadGamesRequestData = `${baseApiUrl}/faster/game?downloadId=${downloadId}`;
+      const  getDownloadGamesRequestData = await axios.get(downloadGamesRequestData, {signal});
+      const {total, done, lastDownloadedAt, pending} = getDownloadGamesRequestData.data;
 
       const lastDownloadedAtParsed = Date.parse(lastDownloadedAt);
 
@@ -260,7 +284,7 @@ class SearchBoard extends Component {
 
     } catch (error) {
       if (axios.isCancel(error)) {
-        console.log('Request canceled', error.message);
+        console.log('Request DownloadingLongPollProgress canceled', error.message);
       } else {
         console.log(error, 'error - DownloadingLongPollProgress')
       }
@@ -271,6 +295,9 @@ class SearchBoard extends Component {
     const {inputData, fen} = this.state;
     const timeoutThreshold = 60000;
 
+    this.resetOrStartAbortController();
+    const { signal } = this.abortControllerInstance;
+
     try {
       const {showPopup} = this.props;
       const newObjToFen = objToFen(fen);
@@ -278,30 +305,31 @@ class SearchBoard extends Component {
 
       if (!showPopup) return;
 
-      const {searchId} = await this.makeRequest('faster/board', 'post', boardData);
+      const getBoardData = await axios.post(`${baseApiUrl}/faster/board`, boardData, {signal});
+      const {searchId} = getBoardData.data;
 
       if (searchId) {
         await this.checkSearchStatus(searchId, timeoutThreshold);
       }
     } catch (error) {
       if (axios.isCancel(error)) {
-        console.log('Request canceled', error.message);
+        console.log('Request SearchingLongPollProgress canceled', error.message);
       } else {
-        console.log(error, 'error - checkSearchStatus')
+        console.log(error, 'error - SearchingLongPollProgress')
       }
     }
   };
 
   checkSearchStatus = async (searchId, timeoutThreshold) => {
+    const {showPopup} = this.props;
+    this.resetOrStartAbortController();
+    const { signal } = this.abortControllerInstance;
+
     try {
-      const checkSearchStatusRequestData = `faster/board?searchId=${searchId}`;
-      const {
-        total,
-        examined,
-        status,
-        matched,
-        lastExaminedAtString
-      } = await this.makeRequest(checkSearchStatusRequestData, 'get');
+      if (!showPopup) return;
+      const checkSearchStatusRequestData = `${baseApiUrl}/faster/board?searchId=${searchId}`;
+      const getCheckSearchStatusRequestData = await axios.get(checkSearchStatusRequestData, {signal});
+      const {total, examined, status, matched, lastExaminedAtString} = getCheckSearchStatusRequestData.data;
 
       const searchProgressCalc = total && examined && (examined / total) * 100;
 
@@ -335,30 +363,9 @@ class SearchBoard extends Component {
       }
     } catch (error) {
       if (axios.isCancel(error)) {
-        console.log('Request canceled', error.message);
+        console.log('Request checkSearchStatus canceled', error.message);
       } else {
         console.log(error, 'error - checkSearchStatus')
-      }
-    }
-  };
-
-  makeRequest = async (url, method, requestData) => {
-    this.source = axios.CancelToken.source();
-
-    try {
-      const response = await axios({
-        method,
-        url: `${baseApiUrl}/${url}`,
-        data: requestData,
-        cancelToken: this.source.token
-      });
-
-      return response.data;
-    } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log('Request canceled', error.message);
-      } else {
-        console.log('Request failed', error.message);
       }
     }
   };
@@ -383,7 +390,7 @@ class SearchBoard extends Component {
           <Col>
             <DeleteButton
               onClick={() => this.props.toggleDeleteMode()}
-              isDeleteMode={isDeleteMode}
+              isdeletemode={isDeleteMode ? "true" : "false"}
             >
               <img src={deletePng} alt="delete"/>
             </DeleteButton>

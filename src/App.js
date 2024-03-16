@@ -6,8 +6,6 @@ import GithubLink from "./components/GithubLink";
 import LeftSide from "./components/LeftSide";
 
 const GlobalStyles = createGlobalStyle`
-  @import url("https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap");
-
   *,
   *::before,
   *::after {
