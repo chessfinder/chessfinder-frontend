@@ -3,7 +3,6 @@
   "version": "2.4.7",
   "description": "Chessboard.jsx is a chessboard for React. Inspired by chessboard.js",
   "main": "dist/chessboard.min.js",
-  "types": "chessboard.d.ts",
   "scripts": {
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate",
